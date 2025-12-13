@@ -1,0 +1,32 @@
+
+============================================================
+  ATOM Temporal KG Integration Verification
+============================================================
+==================================================
+1. 测试导入...
+==================================================
+C:\Python311\Lib\site-packages\torch\cuda\__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+Traceback (most recent call last):
+  File "C:\github\graph-rag-agent\graphrag_agent\tests\verify_atom_integration.py", line 21, in test_imports
+    from graphrag_agent.config import settings
+  File "C:\github\graph-rag-agent\graphrag_agent\__init__.py", line 47, in <module>
+    from graphrag_agent.community import (
+  File "C:\github\graph-rag-agent\graphrag_agent\community\__init__.py", line 1, in <module>
+    from .detector import CommunityDetectorFactory
+  File "C:\github\graph-rag-agent\graphrag_agent\community\detector\__init__.py", line 2, in <module>
+    from graphdatascience import GraphDataScience
+ModuleNotFoundError: No module named 'graphdatascience'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\github\graph-rag-agent\graphrag_agent\tests\verify_atom_integration.py", line 225, in <module>
+    success = main()
+              ^^^^^^
+  File "C:\github\graph-rag-agent\graphrag_agent\tests\verify_atom_integration.py", line 192, in main
+    results.append(("导入测试", test_imports()))
+                                ^^^^^^^^^^^^^^
+  File "C:\github\graph-rag-agent\graphrag_agent\tests\verify_atom_integration.py", line 28, in test_imports
+    print(f"  \u2717 settings 导入失败: {e}")
+UnicodeEncodeError: 'gbk' codec can't encode character '\u2717' in position 2: illegal multibyte sequence

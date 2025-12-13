@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Any, Tuple
-from graphdatascience import GraphDataScience
+from typing import TYPE_CHECKING, Dict, Any, Tuple
+if TYPE_CHECKING:
+    from graphdatascience import GraphDataScience
 from langchain_community.graphs import Neo4jGraph
 import psutil
 import os
@@ -12,7 +13,7 @@ from graphrag_agent.config.settings import MAX_WORKERS, GDS_CONCURRENCY, GDS_MEM
 class BaseCommunityDetector(ABC):
     """社区检测基类"""
     
-    def __init__(self, gds: GraphDataScience, graph: Neo4jGraph):
+    def __init__(self, gds: "GraphDataScience", graph: Neo4jGraph):
         self.gds = gds
         self.graph = graph
         self.projection_name = "communities"

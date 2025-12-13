@@ -5,10 +5,11 @@ ATOM Integration Verification Script
 """
 
 import sys
-import os
+from pathlib import Path
 
-# 添加项目路径
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# 添加项目路径 (graphrag_agent/tests -> graph-rag-agent)
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(PROJECT_ROOT))
 
 def test_imports():
     """测试导入是否正常"""
@@ -18,13 +19,13 @@ def test_imports():
     
     try:
         from graphrag_agent.config import settings
-        print(f"  ✓ settings 导入成功")
+        print(f"  [OK] settings 导入成功")
         print(f"    - ATOM_ENABLED: {settings.ATOM_ENABLED}")
         print(f"    - ATOM_ENTITY_THRESHOLD: {settings.ATOM_ENTITY_THRESHOLD}")
         print(f"    - ATOM_RELATION_THRESHOLD: {settings.ATOM_RELATION_THRESHOLD}")
         print(f"    - ATOM_MAX_WORKERS: {settings.ATOM_MAX_WORKERS}")
     except Exception as e:
-        print(f"  ✗ settings 导入失败: {e}")
+        print(f"  [FAIL] settings 导入失败: {e}")
         return False
     
     try:
@@ -33,9 +34,9 @@ def test_imports():
             TemporalEntity,
             TemporalRelationship,
         )
-        print(f"  ✓ temporal_kg 模块导入成功")
+        print(f"  [OK] temporal_kg 模块导入成功")
     except Exception as e:
-        print(f"  ✗ temporal_kg 导入失败: {e}")
+        print(f"  [FAIL] temporal_kg 导入失败: {e}")
         return False
     
     try:
@@ -45,9 +46,9 @@ def test_imports():
             Neo4jTemporalWriter,
             create_temporal_writer,
         )
-        print(f"  ✓ atom_adapter 和 temporal_writer 导入成功")
+        print(f"  [OK] atom_adapter 和 temporal_writer 导入成功")
     except Exception as e:
-        print(f"  ✗ extraction 模块导入失败: {e}")
+        print(f"  [FAIL] extraction 模块导入失败: {e}")
         return False
     
     return True
@@ -85,14 +86,14 @@ def test_temporal_kg_model():
         relationships=[rel],
     )
     
-    print(f"  ✓ TemporalKnowledgeGraph 创建成功")
+    print(f"  [OK] TemporalKnowledgeGraph 创建成功")
     print(f"    - 实体数量: {len(kg.entities)}")
     print(f"    - 关系数量: {len(kg.relationships)}")
     print(f"    - is_empty(): {kg.is_empty()}")
     
     # 测试转换为 GraphDocument
     graph_docs = kg.to_graph_documents(source_text="测试文本")
-    print(f"  ✓ to_graph_documents() 成功")
+    print(f"  [OK] to_graph_documents() 成功")
     print(f"    - GraphDocument 数量: {len(graph_docs)}")
     
     if graph_docs:
@@ -111,17 +112,17 @@ def test_itext2kg_import():
     
     try:
         from itext2kg.atom import Atom
-        print(f"  ✓ itext2kg.atom.Atom 导入成功")
+        print(f"  [OK] itext2kg.atom.Atom 导入成功")
     except ImportError as e:
-        print(f"  ⚠ itext2kg 未安装或导入失败: {e}")
+        print(f"  [WARN] itext2kg 未安装或导入失败: {e}")
         print(f"    提示: 运行 'pip install -e ./itext2kg' 安装")
         return False
     
     try:
         from itext2kg.atom.models import KnowledgeGraph, Entity, Relationship
-        print(f"  ✓ itext2kg.atom.models 导入成功")
+        print(f"  [OK] itext2kg.atom.models 导入成功")
     except ImportError as e:
-        print(f"  ✗ itext2kg.atom.models 导入失败: {e}")
+        print(f"  [FAIL] itext2kg.atom.models 导入失败: {e}")
         return False
     
     return True
@@ -145,9 +146,9 @@ def test_adapter_creation():
     
     for method in methods:
         if hasattr(AtomExtractionAdapter, method):
-            print(f"  ✓ AtomExtractionAdapter.{method}() 存在")
+            print(f"  [OK] AtomExtractionAdapter.{method}() 存在")
         else:
-            print(f"  ✗ AtomExtractionAdapter.{method}() 不存在")
+            print(f"  [FAIL] AtomExtractionAdapter.{method}() 不存在")
             return False
     
     return True
@@ -171,9 +172,9 @@ def test_writer_structure():
     
     for method in methods:
         if hasattr(Neo4jTemporalWriter, method):
-            print(f"  ✓ Neo4jTemporalWriter.{method}() 存在")
+            print(f"  [OK] Neo4jTemporalWriter.{method}() 存在")
         else:
-            print(f"  ✗ Neo4jTemporalWriter.{method}() 不存在")
+            print(f"  [FAIL] Neo4jTemporalWriter.{method}() 不存在")
             return False
     
     return True
@@ -203,7 +204,7 @@ def main():
     failed = 0
     
     for name, result in results:
-        status = "✓ PASS" if result else "✗ FAIL"
+        status = "[OK] PASS" if result else "[FAIL] FAIL"
         print(f"  {status}: {name}")
         if result:
             passed += 1
@@ -213,9 +214,9 @@ def main():
     print(f"\n  总计: {passed} 通过, {failed} 失败")
     
     if failed == 0:
-        print("\n  🎉 所有验证测试通过！")
+        print("\n  [Success] 所有验证测试通过！")
     else:
-        print("\n  ⚠ 部分测试失败，请检查上述错误信息。")
+        print("\n  [Warn] 部分测试失败，请检查上述错误信息。")
     
     return failed == 0
 

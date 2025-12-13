@@ -1,5 +1,4 @@
 import time
-from graphdatascience import GraphDataScience
 from typing import Tuple, List, Any, Dict
 from dataclasses import dataclass
 
@@ -49,6 +48,15 @@ class SimilarEntityDetector:
         Args:
             config: GDS配置参数，包含连接信息和算法阈值
         """
+        # 延迟导入 graphdatascience，避免在模块加载时崩溃
+        try:
+            from graphdatascience import GraphDataScience
+        except ImportError as exc:
+            raise ImportError(
+                "graphdatascience package is required for similar entity detection. "
+                "Install with `pip install graphdatascience`."
+            ) from exc
+        
         self.config = config or GDSConfig()
         self.gds = GraphDataScience(
             self.config.uri,

@@ -1,9 +1,11 @@
 import os
 import sys
 import argparse
+from pathlib import Path
 
-# 添加父目录到路径，使得可以导入evaluator模块
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+# 添加项目根目录到路径 (evaluation/test -> graph-rag-agent)
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(PROJECT_ROOT))
 
 from graphrag_agent.evaluation import set_debug_mode
 from graphrag_agent.evaluation.utils.logging_utils import setup_logger

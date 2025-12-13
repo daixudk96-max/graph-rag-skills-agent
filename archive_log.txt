@@ -1,0 +1,9 @@
+Task status: 鉁?Complete
+
+Specs to update:
+  atom-extraction: update
+
+Validation errors in rebuilt spec for atom-extraction (will not write changes):
+  鉁?Requirement must contain SHALL or MUST keyword
+  鉁?Requirement must contain SHALL or MUST keyword
+Aborted. No files were changed.

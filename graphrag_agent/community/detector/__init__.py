@@ -1,5 +1,8 @@
+from typing import TYPE_CHECKING
 from langchain_community.graphs import Neo4jGraph
-from graphdatascience import GraphDataScience
+
+if TYPE_CHECKING:
+    from graphdatascience import GraphDataScience
 from .base import BaseCommunityDetector
 from .leiden import LeidenDetector
 from .sllpa import SLLPADetector
@@ -13,7 +16,7 @@ class CommunityDetectorFactory:
     }
     
     @classmethod
-    def create(cls, algorithm: str, gds: GraphDataScience, graph: Neo4jGraph) -> BaseCommunityDetector:
+    def create(cls, algorithm: str, gds: "GraphDataScience", graph: Neo4jGraph) -> BaseCommunityDetector:
         algorithm = algorithm.lower()
         if algorithm not in cls.ALGORITHMS:
             raise ValueError(f"不支持的算法: {algorithm}")

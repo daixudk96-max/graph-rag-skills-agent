@@ -1,0 +1,228 @@
+C:\Python311\Lib\site-packages\torch\cuda\__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+--- Logging error ---
+Traceback (most recent call last):
+  File "C:\Python311\Lib\logging\__init__.py", line 1113, in emit
+    stream.write(msg + self.terminator)
+UnicodeEncodeError: 'gbk' codec can't encode character '\u26a0' in position 87: illegal multibyte sequence
+Call stack:
+  File "C:\github\graph-rag-agent\test_atom_extraction.py", line 166, in <module>
+    adapter = AtomExtractionAdapter(
+  File "C:\github\graph-rag-agent\graphrag_agent\graph\extraction\atom_adapter.py", line 81, in __init__
+    self.atom = Atom(
+  File "C:\github\graph-rag-agent\itext2kg\itext2kg\atom\atom.py", line 28, in __init__
+    self.llm_output_parser = LangchainOutputParser(llm_model=llm_model, embeddings_model=embeddings_model)
+  File "C:\github\graph-rag-agent\itext2kg\itext2kg\llm_output_parsing\langchain_output_parser.py", line 95, in __init__
+    self.provider_type = provider_type if provider_type else self._detect_provider()
+  File "C:\github\graph-rag-agent\itext2kg\itext2kg\llm_output_parsing\langchain_output_parser.py", line 152, in _detect_provider
+    logger.warning(f"\u26a0\ufe0f  Could not auto-detect provider from model: {model_class_name}")
+Message: '\u26a0\ufe0f  Could not auto-detect provider from model: basechatmodel'
+Arguments: ()
+============================================================
+Phase 2: ATOM Default Extraction Testing
+============================================================
+
+1. 基础导入测试...
+  [ERROR] ModuleNotFoundError: No module named 'graphdatascience'
+
+2. itext2kg ATOM 模块导入...
+  [PASS] Atom, KnowledgeGraph, Entity, Relationship
+
+3. TemporalKnowledgeGraph 模型测试...
+   实体数量: 2
+   关系数量: 1
+   is_empty(): False
+   GraphDocument 数量: 1
+  [PASS] 创建成功 - 2 实体, 1 关系
+
+4. AtomExtractionAdapter 结构测试...
+  [PASS] 所有 5 个方法存在
+
+5. Mock LLM/Embeddings 初始化测试...
+  [PASS] LLM 和 Embeddings Mock 创建成功
+   尝试初始化 AtomExtractionAdapter...
+[2025-12-14 00:51:37] [ WARNING] [itext2kg.llm_output_parsing.langchain_output_parser]    Module: langchain_core.language_models.chat_models
+[2025-12-14 00:51:37] [ WARNING] [itext2kg.llm_output_parsing.langchain_output_parser]    Using conservative defaults for unknown provider
+--- Logging error ---
+Traceback (most recent call last):
+  File "C:\Python311\Lib\logging\__init__.py", line 1113, in emit
+    stream.write(msg + self.terminator)
+UnicodeEncodeError: 'gbk' codec can't encode character '\U0001f50d' in position 87: illegal multibyte sequence
+Call stack:
+  File "C:\github\graph-rag-agent\test_atom_extraction.py", line 166, in <module>
+    adapter = AtomExtractionAdapter(
+  File "C:\github\graph-rag-agent\graphrag_agent\graph\extraction\atom_adapter.py", line 81, in __init__
+    self.atom = Atom(
+  File "C:\github\graph-rag-agent\itext2kg\itext2kg\atom\atom.py", line 28, in __init__
+    self.llm_output_parser = LangchainOutputParser(llm_model=llm_model, embeddings_model=embeddings_model)
+  File "C:\github\graph-rag-agent\itext2kg\itext2kg\llm_output_parsing\langchain_output_parser.py", line 98, in __init__
+    logger.info(f"\U0001f50d Detected LLM Provider: {self.config.name}")
+Message: '\U0001f50d Detected LLM Provider: Unknown'
+Arguments: ()
+--- Logging error ---
+Traceback (most recent call last):
+  File "C:\Python311\Lib\logging\__init__.py", line 1113, in emit
+    stream.write(msg + self.terminator)
+UnicodeEncodeError: 'gbk' codec can't encode character '\U0001f4ca' in position 87: illegal multibyte sequence
+Call stack:
+  File "C:\github\graph-rag-agent\test_atom_extraction.py", line 166, in <module>
+    adapter = AtomExtractionAdapter(
+  File "C:\github\graph-rag-agent\graphrag_agent\graph\extraction\atom_adapter.py", line 81, in __init__
+    self.atom = Atom(
+  File "C:\github\graph-rag-agent\itext2kg\itext2kg\atom\atom.py", line 28, in __init__
+    self.llm_output_parser = LangchainOutputParser(llm_model=llm_model, embeddings_model=embeddings_model)
+  File "C:\github\graph-rag-agent\itext2kg\itext2kg\llm_output_parsing\langchain_output_parser.py", line 99, in __init__
+    logger.info(f"\U0001f4ca Rate Limiting Config: {self.config.max_elements_per_batch} requests/batch, "
+Message: '\U0001f4ca Rate Limiting Config: 5 requests/batch, 4000 tokens/batch'
+Arguments: ()
+--- Logging error ---
+Traceback (most recent call last):
+  File "C:\Python311\Lib\logging\__init__.py", line 1113, in emit
+    stream.write(msg + self.terminator)
+UnicodeEncodeError: 'gbk' codec can't encode character '\u26a0' in position 87: illegal multibyte sequence
+Call stack:
+  File "C:\github\graph-rag-agent\test_atom_extraction.py", line 201, in <module>
+    adapter = AtomExtractionAdapter(mock_llm, mock_embeddings)
+  File "C:\github\graph-rag-agent\graphrag_agent\graph\extraction\atom_adapter.py", line 81, in __init__
+    self.atom = Atom(
+  File "C:\github\graph-rag-agent\itext2kg\itext2kg\atom\atom.py", line 28, in __init__
+    self.llm_output_parser = LangchainOutputParser(llm_model=llm_model, embeddings_model=embeddings_model)
+  File "C:\github\graph-rag-agent\itext2kg\itext2kg\llm_output_parsing\langchain_output_parser.py", line 95, in __init__
+    self.provider_type = provider_type if provider_type else self._detect_provider()
+  File "C:\github\graph-rag-agent\itext2kg\itext2kg\llm_output_parsing\langchain_output_parser.py", line 152, in _detect_provider
+    logger.warning(f"\u26a0\ufe0f  Could not auto-detect provider from model: {model_class_name}")
+Message: '\u26a0\ufe0f  Could not auto-detect provider from model: magicmock'
+Arguments: ()
+  [PASS] 阈值: ent=0.8, rel=0.7
+
+6. _extract_atomic_facts 测试...
+[2025-12-14 00:51:37] [ WARNING] [itext2kg.llm_output_parsing.langchain_output_parser]    Module: unittest.mock
+[2025-12-14 00:51:37] [ WARNING] [itext2kg.llm_output_parsing.langchain_output_parser]    Using conservative defaults for unknown provider
+--- Logging error ---
+Traceback (most recent call last):
+  File "C:\Python311\Lib\logging\__init__.py", line 1113, in emit
+    stream.write(msg + self.terminator)
+UnicodeEncodeError: 'gbk' codec can't encode character '\U0001f50d' in position 87: illegal multibyte sequence
+Call stack:
+  File "C:\github\graph-rag-agent\test_atom_extraction.py", line 201, in <module>
+    adapter = AtomExtractionAdapter(mock_llm, mock_embeddings)
+  File "C:\github\graph-rag-agent\graphrag_agent\graph\extraction\atom_adapter.py", line 81, in __init__
+    self.atom = Atom(
+  File "C:\github\graph-rag-agent\itext2kg\itext2kg\atom\atom.py", line 28, in __init__
+    self.llm_output_parser = LangchainOutputParser(llm_model=llm_model, embeddings_model=embeddings_model)
+  File "C:\github\graph-rag-agent\itext2kg\itext2kg\llm_output_parsing\langchain_output_parser.py", line 98, in __init__
+    logger.info(f"\U0001f50d Detected LLM Provider: {self.config.name}")
+Message: '\U0001f50d Detected LLM Provider: Unknown'
+Arguments: ()
+--- Logging error ---
+Traceback (most recent call last):
+  File "C:\Python311\Lib\logging\__init__.py", line 1113, in emit
+    stream.write(msg + self.terminator)
+UnicodeEncodeError: 'gbk' codec can't encode character '\U0001f4ca' in position 87: illegal multibyte sequence
+Call stack:
+  File "C:\github\graph-rag-agent\test_atom_extraction.py", line 201, in <module>
+    adapter = AtomExtractionAdapter(mock_llm, mock_embeddings)
+  File "C:\github\graph-rag-agent\graphrag_agent\graph\extraction\atom_adapter.py", line 81, in __init__
+    self.atom = Atom(
+  File "C:\github\graph-rag-agent\itext2kg\itext2kg\atom\atom.py", line 28, in __init__
+    self.llm_output_parser = LangchainOutputParser(llm_model=llm_model, embeddings_model=embeddings_model)
+  File "C:\github\graph-rag-agent\itext2kg\itext2kg\llm_output_parsing\langchain_output_parser.py", line 99, in __init__
+    logger.info(f"\U0001f4ca Rate Limiting Config: {self.config.max_elements_per_batch} requests/batch, "
+Message: '\U0001f4ca Rate Limiting Config: 5 requests/batch, 4000 tokens/batch'
+Arguments: ()
+   输入 chunks: 5
+   提取的 facts: 5
+  [PASS] 成功提取 5 个原子事实
+
+7. Neo4jTemporalWriter 结构测试...
+  [ERROR] AttributeError: 缺少方法: ['_write_entities', '_write_relationships']
+
+8. build_graph.py ATOM 集成测试...
+  [ERROR] ModuleNotFoundError: No module named 'graphdatascience'
+
+9. to_atom_kg 转换测试...
+  [ERROR] ImportError: cannot import name 'EntityProperties' from 'itext2kg.atom.models' (C:\github\graph-rag-agent\itext2kg\itext2kg\atom\models\__init__.py)
+
+10. from_atom_kg 转换测试...
+  [ERROR] ImportError: cannot import name 'EntityProperties' from 'itext2kg.atom.models' (C:\github\graph-rag-agent\itext2kg\itext2kg\atom\models\__init__.py)
+
+============================================================
+测试完成 - 错误报告
+============================================================
+
+发现 5 个错误:
+
+--- 错误 1: 基础导入 ---
+类型: ModuleNotFoundError
+消息: No module named 'graphdatascience'
+上下文: 导入 settings 失败
+时间: 2025-12-14T00:51:35.531608
+
+--- 错误 2: Neo4jTemporalWriter 结构 ---
+类型: AttributeError
+消息: 缺少方法: ['_write_entities', '_write_relationships']
+上下文: 方法检查
+时间: 2025-12-14T00:51:37.202766
+
+--- 错误 3: build_graph.py 导入 ---
+类型: ModuleNotFoundError
+消息: No module named 'graphdatascience'
+上下文: 导入 KnowledgeGraphBuilder 失败
+时间: 2025-12-14T00:51:37.217106
+
+--- 错误 4: to_atom_kg 转换 ---
+类型: ImportError
+消息: cannot import name 'EntityProperties' from 'itext2kg.atom.models' (C:\github\graph-rag-agent\itext2kg\itext2kg\atom\models\__init__.py)
+上下文: 转换失败
+时间: 2025-12-14T00:51:37.219155
+
+--- 错误 5: from_atom_kg 测试 ---
+类型: ImportError
+消息: cannot import name 'EntityProperties' from 'itext2kg.atom.models' (C:\github\graph-rag-agent\itext2kg\itext2kg\atom\models\__init__.py)
+上下文: 测试设置失败
+时间: 2025-12-14T00:51:37.220166
+
+
+--- JSON 错误日志 ---
+[
+  {
+    "test_name": "基础导入",
+    "error_type": "ModuleNotFoundError",
+    "error_message": "No module named 'graphdatascience'",
+    "traceback": "Traceback (most recent call last):\n  File \"C:\\github\\graph-rag-agent\\test_atom_extraction.py\", line 50, in <module>\n    from graphrag_agent.config.settings import ATOM_ENABLED\n  File \"C:\\github\\graph-rag-agent\\graphrag_agent\\__init__.py\", line 23, in <module>\n    from graphrag_agent.graph import (\n  File \"C:\\github\\graph-rag-agent\\graphrag_agent\\graph\\__init__.py\", line 31, in <module>\n    from graphrag_agent.graph.processing import (\n  File \"C:\\github\\graph-rag-agent\\graphrag_agent\\graph\\processing\\__init__.py\", line 2, in <module>\n    from .similar_entity import SimilarEntityDetector, GDSConfig\n  File \"C:\\github\\graph-rag-agent\\graphrag_agent\\graph\\processing\\similar_entity.py\", line 2, in <module>\n    from graphdatascience import GraphDataScience\nModuleNotFoundError: No module named 'graphdatascience'\n",
+    "context": "导入 settings 失败",
+    "timestamp": "2025-12-14T00:51:35.531608"
+  },
+  {
+    "test_name": "Neo4jTemporalWriter 结构",
+    "error_type": "AttributeError",
+    "error_message": "缺少方法: ['_write_entities', '_write_relationships']",
+    "traceback": "NoneType: None\n",
+    "context": "方法检查",
+    "timestamp": "2025-12-14T00:51:37.202766"
+  },
+  {
+    "test_name": "build_graph.py 导入",
+    "error_type": "ModuleNotFoundError",
+    "error_message": "No module named 'graphdatascience'",
+    "traceback": "Traceback (most recent call last):\n  File \"C:\\github\\graph-rag-agent\\test_atom_extraction.py\", line 254, in <module>\n    from graphrag_agent.integrations.build.build_graph import KnowledgeGraphBuilder\n  File \"C:\\github\\graph-rag-agent\\graphrag_agent\\__init__.py\", line 23, in <module>\n    from graphrag_agent.graph import (\n  File \"C:\\github\\graph-rag-agent\\graphrag_agent\\graph\\__init__.py\", line 31, in <module>\n    from graphrag_agent.graph.processing import (\n  File \"C:\\github\\graph-rag-agent\\graphrag_agent\\graph\\processing\\__init__.py\", line 2, in <module>\n    from .similar_entity import SimilarEntityDetector, GDSConfig\n  File \"C:\\github\\graph-rag-agent\\graphrag_agent\\graph\\processing\\similar_entity.py\", line 2, in <module>\n    from graphdatascience import GraphDataScience\nModuleNotFoundError: No module named 'graphdatascience'\n",
+    "context": "导入 KnowledgeGraphBuilder 失败",
+    "timestamp": "2025-12-14T00:51:37.217106"
+  },
+  {
+    "test_name": "to_atom_kg 转换",
+    "error_type": "ImportError",
+    "error_message": "cannot import name 'EntityProperties' from 'itext2kg.atom.models' (C:\\github\\graph-rag-agent\\itext2kg\\itext2kg\\atom\\models\\__init__.py)",
+    "traceback": "Traceback (most recent call last):\n  File \"C:\\github\\graph-rag-agent\\test_atom_extraction.py\", line 294, in <module>\n    atom_kg = kg.to_atom_kg()\n              ^^^^^^^^^^^^^^^\n  File \"C:\\github\\graph-rag-agent\\graphrag_agent\\graph\\structure\\temporal_kg.py\", line 321, in to_atom_kg\n    from itext2kg.atom.models import (\nImportError: cannot import name 'EntityProperties' from 'itext2kg.atom.models' (C:\\github\\graph-rag-agent\\itext2kg\\itext2kg\\atom\\models\\__init__.py)\n",
+    "context": "转换失败",
+    "timestamp": "2025-12-14T00:51:37.219155"
+  },
+  {
+    "test_name": "from_atom_kg 测试",
+    "error_type": "ImportError",
+    "error_message": "cannot import name 'EntityProperties' from 'itext2kg.atom.models' (C:\\github\\graph-rag-agent\\itext2kg\\itext2kg\\atom\\models\\__init__.py)",
+    "traceback": "Traceback (most recent call last):\n  File \"C:\\github\\graph-rag-agent\\test_atom_extraction.py\", line 310, in <module>\n    from itext2kg.atom.models import (\nImportError: cannot import name 'EntityProperties' from 'itext2kg.atom.models' (C:\\github\\graph-rag-agent\\itext2kg\\itext2kg\\atom\\models\\__init__.py)\n",
+    "context": "测试设置失败",
+    "timestamp": "2025-12-14T00:51:37.220166"
+  }
+]
