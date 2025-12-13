@@ -38,6 +38,9 @@ streamlit==1.42.2
 tqdm==4.66.3
 uvicorn==0.29.0
 
+# ATOM temporal knowledge graph extraction (local package)
+-e ./itext2kg
+
 # linux: sudo apt-get install python-dev-is-python3 libxml2-dev libxslt1-dev antiword unrtf poppler-utils
 textract==1.6.3
 

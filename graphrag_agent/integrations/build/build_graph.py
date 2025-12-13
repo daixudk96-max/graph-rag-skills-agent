@@ -22,12 +22,23 @@ from graphrag_agent.config.settings import (
     CHUNK_SIZE,
     OVERLAP,
     MAX_WORKERS, BATCH_SIZE,
+    # ATOM temporal KG settings
+    ATOM_ENABLED,
+    ATOM_ENTITY_THRESHOLD,
+    ATOM_RELATION_THRESHOLD,
+    ATOM_MAX_WORKERS,
 )
 from graphrag_agent.config.neo4jdb import get_db_manager
 from graphrag_agent.pipelines.ingestion.document_processor import DocumentProcessor
 from graphrag_agent.graph import GraphStructureBuilder
 from graphrag_agent.graph import EntityRelationExtractor
 from graphrag_agent.graph import GraphWriter
+# ATOM temporal KG components (conditionally imported)
+if ATOM_ENABLED:
+    from graphrag_agent.graph.extraction import (
+        AtomExtractionAdapter,
+        Neo4jTemporalWriter,
+    )
 
 import shutup
 shutup.please()
@@ -64,6 +75,9 @@ class KnowledgeGraphBuilder:
             "写入数据库": 0
         }
         
+        # ATOM 提取策略标志
+        self.use_atom = ATOM_ENABLED
+        
         # 初始化组件
         self._initialize_components()
 
@@ -99,18 +113,37 @@ class KnowledgeGraphBuilder:
             progress.advance(task)
             
             self.struct_builder = GraphStructureBuilder(batch_size=BATCH_SIZE)
-            self.entity_extractor = EntityRelationExtractor(
-                self.llm,
-                system_template_build_graph,
-                human_template_build_graph,
-                entity_types,
-                relationship_types,
-                max_workers=MAX_WORKERS,
-                batch_size=5  # LLM批处理大小保持小一些以确保质量
-            )
+            
+            # 根据配置初始化提取器
+            if self.use_atom:
+                # ATOM 时序知识图谱提取器
+                self.atom_adapter = AtomExtractionAdapter(
+                    llm_model=self.llm,
+                    embeddings_model=self.embeddings,
+                    ent_threshold=ATOM_ENTITY_THRESHOLD,
+                    rel_threshold=ATOM_RELATION_THRESHOLD,
+                    max_workers=ATOM_MAX_WORKERS,
+                )
+                self.temporal_writer = Neo4jTemporalWriter(
+                    graph=self.graph,
+                    batch_size=BATCH_SIZE,
+                )
+                self.console.print(f"[green]使用 ATOM 时序知识图谱提取器[/green]")
+            else:
+                # 传统实体关系提取器
+                self.entity_extractor = EntityRelationExtractor(
+                    self.llm,
+                    system_template_build_graph,
+                    human_template_build_graph,
+                    entity_types,
+                    relationship_types,
+                    max_workers=MAX_WORKERS,
+                    batch_size=5  # LLM批处理大小保持小一些以确保质量
+                )
+                self.console.print(f"[blue]使用传统实体关系提取器[/blue]")
             
             # 输出使用的参数
-            self.console.print(f"[blue]并行处理线程数: {MAX_WORKERS}[/blue]")
+            self.console.print(f"[blue]并行处理线程数: {ATOM_MAX_WORKERS if self.use_atom else MAX_WORKERS}[/blue]")
             self.console.print(f"[blue]数据库批处理大小: {BATCH_SIZE}[/blue]")
             
             progress.advance(task)
@@ -137,6 +170,72 @@ class KnowledgeGraphBuilder:
         hours, remainder = divmod(seconds, 3600)
         minutes, seconds = divmod(remainder, 60)
         return f"{int(hours):02d}:{int(minutes):02d}:{int(seconds):02d}.{int((seconds % 1) * 1000):03d}"
+
+    def _extract_with_atom(self):
+        """
+        使用 ATOM 提取时序知识图谱并写入数据库。
+        
+        ATOM 特点：
+        - 原子事实分解提高事实完整性
+        - 并行 5-元组提取
+        - 时序属性支持 (t_obs, t_start, t_end)
+        """
+        import asyncio
+        from datetime import datetime, timezone
+        
+        with self._create_progress() as progress:
+            total_docs = len([d for d in self.processed_documents if "chunks" in d and d["chunks"]])
+            task = progress.add_task("[cyan]ATOM 时序知识图谱提取...", total=total_docs)
+            
+            total_entities = 0
+            total_relationships = 0
+            
+            for doc in self.processed_documents:
+                if "chunks" not in doc or not doc["chunks"]:
+                    continue
+                
+                # 准备 chunks 数据
+                chunks = doc["chunks"]
+                
+                # 使用 ATOM 提取
+                self.console.print(f"[dim]处理文件: {doc['filename']} ({len(chunks)} chunks)[/dim]")
+                
+                try:
+                    # 获取观察时间戳
+                    obs_time = datetime.now(timezone.utc).isoformat()
+                    
+                    # 调用 ATOM 适配器提取（同步方式）
+                    temporal_kg = self.atom_adapter.extract_from_chunks_sync(
+                        chunks, 
+                        observation_time=obs_time
+                    )
+                    
+                    # 存储提取结果
+                    doc["temporal_kg"] = temporal_kg
+                    total_entities += len(temporal_kg.entities)
+                    total_relationships += len(temporal_kg.relationships)
+                    
+                    # 写入 Neo4j
+                    if not temporal_kg.is_empty():
+                        stats = self.temporal_writer.write_temporal_kg(
+                            temporal_kg, 
+                            merge_strategy='update'
+                        )
+                        self.console.print(
+                            f"[green]  ✓ {doc['filename']}: "
+                            f"{stats['entities']} 实体, {stats['relationships']} 关系[/green]"
+                        )
+                    else:
+                        self.console.print(f"[yellow]  ⚠ {doc['filename']}: 未提取到实体或关系[/yellow]")
+                        
+                except Exception as e:
+                    self.console.print(f"[red]  ✗ {doc['filename']} 提取失败: {e}[/red]")
+                
+                progress.advance(task)
+            
+            self.console.print(
+                f"[blue]ATOM 提取完成: 共 {total_entities} 实体, {total_relationships} 关系[/blue]"
+            )
 
     def build_base_graph(self) -> List:
         """
@@ -228,63 +327,69 @@ class KnowledgeGraphBuilder:
             
             # 4. 提取实体和关系
             extract_start = time.time()
-            with self._create_progress() as progress:
-                total_chunks = sum(doc.get("chunk_count", 0) for doc in self.processed_documents)
-                task = progress.add_task("[cyan]提取实体和关系...", total=total_chunks)
+            
+            if self.use_atom:
+                # ATOM 时序知识图谱提取
+                self._extract_with_atom()
+            else:
+                # 传统实体关系提取
+                with self._create_progress() as progress:
+                    total_chunks = sum(doc.get("chunk_count", 0) for doc in self.processed_documents)
+                    task = progress.add_task("[cyan]提取实体和关系...", total=total_chunks)
+                    
+                    def progress_callback(chunk_index):
+                        progress.advance(task)
+                    
+                    # 准备处理的数据格式
+                    file_contents_format = []
+                    for doc in self.processed_documents:
+                        if "chunks" in doc and doc["chunks"]:
+                            file_contents_format.append([
+                                doc["filename"], 
+                                doc["content"], 
+                                doc["chunks"]
+                            ])
+                    
+                    # 根据数据集大小选择处理方法
+                    if total_chunks > 100:
+                        # 对于大型数据集使用批处理模式
+                        processed_file_contents = self.entity_extractor.process_chunks_batch(
+                            file_contents_format,
+                            progress_callback
+                        )
+                    else:
+                        # 对于小型数据集使用标准并行处理
+                        processed_file_contents = self.entity_extractor.process_chunks(
+                            file_contents_format,
+                            progress_callback
+                        )
+                    
+                    # 将处理结果合并回文档数据
+                    file_content_map = {}
+                    for processed_file in processed_file_contents:
+                        if len(processed_file) >= 4:  # 确保有足够的元素
+                            filename = processed_file[0]
+                            entity_data = processed_file[3]
+                            file_content_map[filename] = entity_data
+                    
+                    # 使用映射将结果放回到原始文档中
+                    for doc in self.processed_documents:
+                        if "chunks" in doc and doc["chunks"]:
+                            filename = doc["filename"]
+                            if filename in file_content_map:
+                                doc["entity_data"] = file_content_map[filename]
+                            else:
+                                self.console.print(f"[yellow]警告: 文件 {filename} 的实体抽取结果未找到[/yellow]")
                 
-                def progress_callback(chunk_index):
-                    progress.advance(task)
+                # 输出缓存统计
+                cache_hits = getattr(self.entity_extractor, 'cache_hits', 0)
+                cache_misses = getattr(self.entity_extractor, 'cache_misses', 0)
+                total_requests = cache_hits + cache_misses
+                cache_rate = (cache_hits / total_requests * 100) if total_requests > 0 else 0
                 
-                # 准备处理的数据格式
-                file_contents_format = []
-                for doc in self.processed_documents:
-                    if "chunks" in doc and doc["chunks"]:
-                        file_contents_format.append([
-                            doc["filename"], 
-                            doc["content"], 
-                            doc["chunks"]
-                        ])
-                
-                # 根据数据集大小选择处理方法
-                if total_chunks > 100:
-                    # 对于大型数据集使用批处理模式
-                    processed_file_contents = self.entity_extractor.process_chunks_batch(
-                        file_contents_format,
-                        progress_callback
-                    )
-                else:
-                    # 对于小型数据集使用标准并行处理
-                    processed_file_contents = self.entity_extractor.process_chunks(
-                        file_contents_format,
-                        progress_callback
-                    )
-                
-                # 将处理结果合并回文档数据
-                file_content_map = {}
-                for processed_file in processed_file_contents:
-                    if len(processed_file) >= 4:  # 确保有足够的元素
-                        filename = processed_file[0]
-                        entity_data = processed_file[3]
-                        file_content_map[filename] = entity_data
-                
-                # 使用映射将结果放回到原始文档中
-                for doc in self.processed_documents:
-                    if "chunks" in doc and doc["chunks"]:
-                        filename = doc["filename"]
-                        if filename in file_content_map:
-                            doc["entity_data"] = file_content_map[filename]
-                        else:
-                            self.console.print(f"[yellow]警告: 文件 {filename} 的实体抽取结果未找到[/yellow]")
+                self.console.print(f"[blue]LLM调用缓存命中率: {cache_rate:.1f}% ({cache_hits}/{total_requests})[/blue]")
             
             self.performance_stats["实体抽取"] = time.time() - extract_start
-            
-            # 输出缓存统计
-            cache_hits = getattr(self.entity_extractor, 'cache_hits', 0)
-            cache_misses = getattr(self.entity_extractor, 'cache_misses', 0)
-            total_requests = cache_hits + cache_misses
-            cache_rate = (cache_hits / total_requests * 100) if total_requests > 0 else 0
-            
-            self.console.print(f"[blue]LLM调用缓存命中率: {cache_rate:.1f}% ({cache_hits}/{total_requests})[/blue]")
             
             # 5. 写入数据库
             write_start = time.time()

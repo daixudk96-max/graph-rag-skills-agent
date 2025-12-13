@@ -135,6 +135,16 @@ EMBEDDING_BATCH_SIZE = _get_env_int("EMBEDDING_BATCH_SIZE", 64) or 64  # 向量�
 LLM_BATCH_SIZE = _get_env_int("LLM_BATCH_SIZE", 5) or 5  # LLM 批次
 COMMUNITY_BATCH_SIZE = _get_env_int("COMMUNITY_BATCH_SIZE", 50) or 50  # 社区批次大小
 
+# ===== ATOM 时序知识图谱配置 =====
+# 注意: ATOM 默认关闭，需要设置 ATOM_ENABLED=true 启用
+
+ATOM_ENABLED = _get_env_bool("ATOM_ENABLED", False)  # 是否启用 ATOM 提取器
+ATOM_ENTITY_THRESHOLD = _get_env_float("ATOM_ENTITY_THRESHOLD", 0.8) or 0.8  # 实体合并阈值
+ATOM_RELATION_THRESHOLD = _get_env_float("ATOM_RELATION_THRESHOLD", 0.7) or 0.7  # 关系合并阈值
+ATOM_MAX_WORKERS = _get_env_int("ATOM_MAX_WORKERS", 8) or 8  # ATOM 并行工作线程数
+ATOM_ENTITY_NAME_WEIGHT = _get_env_float("ATOM_ENTITY_NAME_WEIGHT", 0.8) or 0.8  # 实体名称嵌入权重
+ATOM_ENTITY_LABEL_WEIGHT = _get_env_float("ATOM_ENTITY_LABEL_WEIGHT", 0.2) or 0.2  # 实体标签嵌入权重
+
 # ===== GDS 相关配置 =====
 
 GDS_MEMORY_LIMIT = _get_env_int("GDS_MEMORY_LIMIT", 6) or 6  # GDS 内存限制(GB)
