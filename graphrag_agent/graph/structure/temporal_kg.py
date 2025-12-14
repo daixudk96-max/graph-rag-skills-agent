@@ -83,6 +83,16 @@ class TemporalEntity:
             node_properties["atom_embeddings"] = self.embeddings
         return Node(id=self.id, type=self.label, properties=node_properties)
 
+    def to_dict(self) -> Dict[str, Any]:
+        """序列化为 JSON 友好的字典结构"""
+        return {
+            "id": self.id,
+            "name": self.name,
+            "label": self.label,
+            "properties": self.properties,
+            "embeddings": list(self.embeddings) if self.embeddings else None,
+        }
+
     @classmethod
     def from_atom_entity(cls, entity: "AtomEntity") -> "TemporalEntity":
         """从 ATOM Entity 创建"""
@@ -157,6 +167,21 @@ class TemporalRelationship:
             properties=rel_properties,
         )
 
+    def to_dict(self) -> Dict[str, Any]:
+        """序列化为 JSON 友好的字典结构"""
+        return {
+            "source_id": self.source_id,
+            "target_id": self.target_id,
+            "type": self.type,
+            "properties": self.properties,
+            "t_obs": list(self.t_obs),
+            "t_start": list(self.t_start),
+            "t_end": list(self.t_end),
+            "atomic_facts": list(self.atomic_facts),
+            "confidence": self.confidence,
+            "embeddings": list(self.embeddings) if self.embeddings else None,
+        }
+
     @classmethod
     def from_atom_relationship(cls, rel: "AtomRelationship") -> "TemporalRelationship":
         """从 ATOM Relationship 创建"""
@@ -213,6 +238,25 @@ class TemporalKnowledgeGraph:
     def is_empty(self) -> bool:
         """检查图谱是否为空"""
         return len(self.entities) == 0 and len(self.relationships) == 0
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        序列化为 JSON 友好的字典结构。
+        
+        包含完整的时序属性 (t_obs, t_start, t_end) 用于持久化和日志输出。
+        """
+        return {
+            "build_time": datetime.now(timezone.utc).isoformat(),
+            "created_at": self.created_at.isoformat(),
+            "last_updated": self.last_updated.isoformat(),
+            "observation_times": list(self.observation_times),
+            "statistics": {
+                "entities": len(self.entities),
+                "relationships": len(self.relationships),
+            },
+            "entities": [entity.to_dict() for entity in self.entities],
+            "relationships": [rel.to_dict() for rel in self.relationships],
+        }
 
     def to_graph_documents(
         self, source_text: str = "", metadata: Optional[Dict[str, Any]] = None

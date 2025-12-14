@@ -1,0 +1,21 @@
+'gbk' codec can't encode character '\u2713' in position 0: illegal multibyte sequence
+Traceback (most recent call last):
+  File "C:\github\graph-rag-agent\build_kg_atom_debug.py", line 335, in main
+    console.print(f"  [green]✓[/green] 加载 {len(chunks)} 个文本块")
+  File "C:\github\graph-rag-agent\.venv\Lib\site-packages\rich\console.py", line 1678, in print
+    with self:
+  File "C:\github\graph-rag-agent\.venv\Lib\site-packages\rich\console.py", line 864, in __exit__
+    self._exit_buffer()
+  File "C:\github\graph-rag-agent\.venv\Lib\site-packages\rich\console.py", line 822, in _exit_buffer
+    self._check_buffer()
+  File "C:\github\graph-rag-agent\.venv\Lib\site-packages\rich\console.py", line 2019, in _check_buffer
+    self._write_buffer()
+  File "C:\github\graph-rag-agent\.venv\Lib\site-packages\rich\console.py", line 2055, in _write_buffer
+    legacy_windows_render(buffer, LegacyWindowsTerm(self.file))
+  File "C:\github\graph-rag-agent\.venv\Lib\site-packages\rich\_windows_renderer.py", line 17, in legacy_windows_render
+    term.write_styled(text, style)
+  File "C:\github\graph-rag-agent\.venv\Lib\site-packages\rich\_win32_console.py", line 441, in write_styled
+    self.write_text(text)
+  File "C:\github\graph-rag-agent\.venv\Lib\site-packages\rich\_win32_console.py", line 402, in write_text
+    self.write(text)
+UnicodeEncodeError: 'gbk' codec can't encode character '\u2713' in position 0: illegal multibyte sequence

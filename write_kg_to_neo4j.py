@@ -5,11 +5,12 @@
 """
 
 import json
+import logging
 import os
 import sys
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Tuple
 
 # 添加项目根目录到 Python 路径
 project_root = Path(__file__).parent
@@ -20,11 +21,96 @@ from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.table import Table
 
+# 配置日志
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
+logger = logging.getLogger(__name__)
+
 console = Console()
 
+
 # ============================================================
-# Neo4j 写入函数
+# 数据一致性校验
 # ============================================================
+
+def validate_graph_consistency(
+    entities: List[Dict[str, Any]], 
+    relations: List[Dict[str, Any]]
+) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    """
+    校验实体-关系一致性，过滤悬空关系。
+    
+    检查每条关系的 source 和 target 是否都存在于实体集合中。
+    将悬空关系（引用不存在实体的关系）过滤掉并记录警告。
+    
+    Args:
+        entities: 实体列表，每个实体需包含 "id" 字段
+        relations: 关系列表，每个关系需包含 "source" 和 "target" 字段
+        
+    Returns:
+        (valid_relations, invalid_relations) 元组
+    """
+    entity_ids = {e["id"] for e in entities}
+    valid: List[Dict[str, Any]] = []
+    invalid: List[Dict[str, Any]] = []
+    
+    for rel in relations:
+        source_valid = rel.get("source") in entity_ids
+        target_valid = rel.get("target") in entity_ids
+        
+        if source_valid and target_valid:
+            valid.append(rel)
+        else:
+            # 记录缺失信息
+            missing_parts = []
+            if not source_valid:
+                missing_parts.append(f"source={rel.get('source')}")
+            if not target_valid:
+                missing_parts.append(f"target={rel.get('target')}")
+            
+            invalid.append({
+                **rel,
+                "_error": f"缺失实体: {', '.join(missing_parts)}",
+            })
+    
+    # 记录警告
+    if invalid:
+        logger.warning("发现 %d 条悬空关系（引用不存在的实体）", len(invalid))
+        for rel in invalid[:5]:  # 只显示前 5 条
+            logger.warning(
+                "  跳过关系: %s -[%s]-> %s (%s)",
+                rel.get("source"),
+                rel.get("type"),
+                rel.get("target"),
+                rel.get("_error"),
+            )
+        if len(invalid) > 5:
+            logger.warning("  ... 还有 %d 条未显示", len(invalid) - 5)
+    
+    return valid, invalid
+
+
+def generate_relation_id(source: str, target: str, rel_type: str, chunk_id: str = "") -> str:
+    """
+    生成关系的稳定唯一 ID。
+    
+    基于 source|target|type|chunk_id 生成哈希，确保同一对节点间
+    的多条不同关系不会被合并。
+    
+    Args:
+        source: 源实体 ID
+        target: 目标实体 ID
+        rel_type: 关系类型
+        chunk_id: 来源文本块 ID（可选）
+        
+    Returns:
+        关系唯一 ID
+    """
+    import hashlib
+    key = f"{source}|{target}|{rel_type}|{chunk_id}"
+    return hashlib.md5(key.encode()).hexdigest()[:16]
 
 def write_to_neo4j(data: Dict[str, Any], neo4j_uri: str, neo4j_user: str, neo4j_password: str):
     """将知识图谱数据写入 Neo4j"""
@@ -35,7 +121,20 @@ def write_to_neo4j(data: Dict[str, Any], neo4j_uri: str, neo4j_user: str, neo4j_
     entities = data.get("entities", [])
     relations = data.get("relations", [])
     
+    # 一致性校验
+    console.print("[yellow]校验数据一致性...[/yellow]")
+    valid_relations, invalid_relations = validate_graph_consistency(entities, relations)
+    
+    if invalid_relations:
+        console.print(
+            f"[yellow]⚠ 过滤 {len(invalid_relations)} 条悬空关系[/yellow]"
+        )
+    
     console.print(f"[cyan]连接 Neo4j: {neo4j_uri}[/cyan]")
+    
+    # 统计计数器
+    success_relations = 0
+    failed_relations = 0
     
     with driver.session() as session:
         # 清理旧数据（可选）
@@ -66,26 +165,58 @@ def write_to_neo4j(data: Dict[str, Any], neo4j_uri: str, neo4j_user: str, neo4j_
                 properties=json.dumps(entity.get("properties", {}), ensure_ascii=False)
             )
         
-        # 写入关系
-        console.print(f"[green]写入 {len(relations)} 个关系...[/green]")
-        for relation in relations:
+        # 写入关系（仅已验证的有效关系）
+        console.print(f"[green]写入 {len(valid_relations)} 个关系...[/green]")
+        for relation in valid_relations:
+            # 生成关系唯一 ID（Phase 3）
+            chunk_id = relation.get("properties", {}).get("来源", "")
+            rel_id = generate_relation_id(
+                relation["source"],
+                relation["target"],
+                relation["type"],
+                chunk_id,
+            )
+            
+            # 使用 rel_id 作为 MERGE 键，避免关系被合并
             cypher = """
             MATCH (source:KGEntity {entity_id: $source_id})
             MATCH (target:KGEntity {entity_id: $target_id})
-            MERGE (source)-[r:RELATES {type: $rel_type}]->(target)
-            SET r.properties = $properties,
+            MERGE (source)-[r:RELATES {rel_id: $rel_id}]->(target)
+            SET r.type = $rel_type,
+                r.properties = $properties,
                 r.created_at = datetime()
             """
             try:
+                # Phase 4: 直接传递属性字典（简单属性）或 JSON 序列化（复杂属性）
+                props = relation.get("properties", {})
+                # Neo4j 不支持嵌套 map，对复杂属性仍需序列化
+                if any(isinstance(v, (dict, list)) for v in props.values()):
+                    props_str = json.dumps(props, ensure_ascii=False)
+                else:
+                    props_str = json.dumps(props, ensure_ascii=False)
+                
                 session.run(cypher,
                     source_id=relation["source"],
                     target_id=relation["target"],
                     rel_type=relation["type"],
-                    properties=json.dumps(relation.get("properties", {}), ensure_ascii=False)
+                    rel_id=rel_id,
+                    properties=props_str,
                 )
+                success_relations += 1
             except Exception as e:
-                # 跳过无法创建的关系（源或目标节点不存在）
-                pass
+                failed_relations += 1
+                logger.error(
+                    "写入关系失败: %s -[%s]-> %s, 错误: %s",
+                    relation["source"],
+                    relation.get("type"),
+                    relation["target"],
+                    e,
+                )
+        
+        # 显示写入结果
+        if failed_relations:
+            console.print(f"[red]✗ {failed_relations} 条关系写入失败[/red]")
+        console.print(f"[green]✓ 成功写入 {success_relations} 条关系[/green]")
         
         # 统计结果
         result = session.run("MATCH (n:KGEntity) RETURN count(n) as node_count")
