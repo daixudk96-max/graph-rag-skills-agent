@@ -15,7 +15,7 @@ class KnowledgeGraphProcessor:
 
     def __init__(self):
         """初始化知识图谱处理器"""
-        self.console = Console()
+        self.console = Console(legacy_windows=True)
 
     def process_all(self):
         """执行完整的处理流程"""

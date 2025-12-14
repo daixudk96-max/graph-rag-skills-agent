@@ -1,0 +1,88 @@
+{
+  "build_time": "2025-12-14T16:31:04.574529+00:00",
+  "created_at": "2025-12-14T16:31:04.565783+00:00",
+  "last_updated": "2025-12-14T16:31:04.565783+00:00",
+  "observation_times": [
+    0.0
+  ],
+  "statistics": {
+    "entities": 4,
+    "relationships": 3
+  },
+  "entities": [
+    {
+      "id": "Li Ming",
+      "name": "Li Ming",
+      "label": "Person",
+      "properties": {},
+      "embeddings": null
+    },
+    {
+      "id": "Peking University",
+      "name": "Peking University",
+      "label": "Organization",
+      "properties": {},
+      "embeddings": null
+    },
+    {
+      "id": "Beijing",
+      "name": "Beijing",
+      "label": "Location",
+      "properties": {},
+      "embeddings": null
+    },
+    {
+      "id": "National Scholarship",
+      "name": "National Scholarship",
+      "label": "Award",
+      "properties": {},
+      "embeddings": null
+    }
+  ],
+  "relationships": [
+    {
+      "source_id": "Li Ming",
+      "target_id": "Peking University",
+      "type": "ATTENDS",
+      "properties": {},
+      "t_obs": [],
+      "t_start": [],
+      "t_end": [],
+      "atomic_facts": [],
+      "confidence": 1.0,
+      "embeddings": null
+    },
+    {
+      "source_id": "Peking University",
+      "target_id": "Beijing",
+      "type": "LOCATED_IN",
+      "properties": {},
+      "t_obs": [],
+      "t_start": [],
+      "t_end": [],
+      "atomic_facts": [],
+      "confidence": 1.0,
+      "embeddings": null
+    },
+    {
+      "source_id": "Li Ming",
+      "target_id": "National Scholarship",
+      "type": "APPLIES_FOR",
+      "properties": {},
+      "t_obs": [],
+      "t_start": [],
+      "t_end": [],
+      "atomic_facts": [],
+      "confidence": 1.0,
+      "embeddings": null
+    }
+  ],
+  "metadata": {
+    "input": "C:\\github\\graph-rag-agent\\files\\test_dir",
+    "neo4j_write": {
+      "entities": 4,
+      "relationships": 3
+    },
+    "extractor": "ATOM"
+  }
+}

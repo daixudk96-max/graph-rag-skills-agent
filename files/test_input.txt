@@ -1,3 +1,3 @@
-Li Ming is a student at Peking University.
-Peking University is located in Beijing.
-Li Ming applies for the National Scholarship.
+GraphRAG is an innovative RAG framework that combines Knowledge Graphs with LLMs.
+It allows for better reasoning and understanding of complex datasets.
+This is a test file for verifying the ATOM extraction adapter.

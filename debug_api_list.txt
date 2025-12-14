@@ -1,0 +1,16 @@
+Loaded config:
+API Key: sk-b268d...4c84
+Base URL: https://dashscope.aliyuncs.com/compatible-mode/v1
+Model: qwen-flash
+
+Attempting to call API...
+Success! Response:
+Hello! I'm here and ready to help you
+
+Attempting to call Embeddings...
+Embedding Model: text-embedding-v4
+Success! Embedding generated.
+Dimension: 1024
+
+Attempting to call Embeddings with LIST input...
+Success! List Embedding generated.

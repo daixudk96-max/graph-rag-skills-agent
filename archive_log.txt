@@ -1,9 +1,10 @@
+
+鈿狅笍  WARNING: Skipping validation may archive invalid specs.
+[2025-12-14T14:42:11.228Z] Validation skipped for change: fix-kg-write-atom-integration
+Affected files: openspec\changes\fix-kg-write-atom-integration
 Task status: 鉁?Complete
 
 Specs to update:
-  atom-extraction: update
-
-Validation errors in rebuilt spec for atom-extraction (will not write changes):
-  鉁?Requirement must contain SHALL or MUST keyword
-  鉁?Requirement must contain SHALL or MUST keyword
+  kg-write-consistency: create
+kg-write-consistency: target spec does not exist; only ADDED requirements are allowed for new specs.
 Aborted. No files were changed.

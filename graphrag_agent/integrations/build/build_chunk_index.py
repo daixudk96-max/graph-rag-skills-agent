@@ -27,7 +27,7 @@ class ChunkIndexBuilder:
     def __init__(self):
         """初始化文本块索引构建器"""
         # 初始化终端界面
-        self.console = Console()
+        self.console = Console(legacy_windows=True)
         
         # 阶段性能统计
         self.performance_stats = {

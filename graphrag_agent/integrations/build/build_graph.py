@@ -59,7 +59,7 @@ class KnowledgeGraphBuilder:
     def __init__(self):
         """初始化知识图谱构建器"""
         # 初始化终端界面
-        self.console = Console()
+        self.console = Console(legacy_windows=True)
         self.processed_documents = []
         
         # 添加计时器

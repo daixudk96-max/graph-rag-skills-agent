@@ -57,13 +57,13 @@
 ## Phase 5: 可选实体质量后处理（待后续迭代）
 
 ### 5.1 添加配置项
-- [ ] 在 `settings.py` 添加 `ENABLE_ENTITY_QUALITY_POSTPROCESS` (默认 `false`)
-- [ ] 在 `.env.example` 添加配置说明
+- [-] 在 `settings.py` 添加 `ENABLE_ENTITY_QUALITY_POSTPROCESS` (默认 `false`)
+- [-] 在 `.env.example` 添加配置说明
 - **验证**: 环境变量控制后处理是否运行
 
 ### 5.2 集成 EntityQualityProcessor
-- [ ] 在 `build_kg_atom.py` 添加可选后处理调用
-- [ ] 仅当配置启用时才导入和运行
+- [-] 在 `build_kg_atom.py` 添加可选后处理调用
+- [-] 仅当配置启用时才导入和运行
 - **验证**: `ENABLE_ENTITY_QUALITY_POSTPROCESS=true python build_kg_atom.py` 触发后处理
 
 ---
@@ -78,8 +78,8 @@
 - [x] 关系唯一 ID 生成已实现
 
 ### 待手动验证
-1. [ ] 运行 `python build_kg_atom.py` 测试 ATOM 提取
-2. [ ] 检查输出 JSON 包含时序字段
-3. [ ] Neo4j Browser 验证节点和关系数量一致性
-4. [ ] Cypher 查询 `MATCH (n) RETURN n.atom_t_obs` 返回时序值
+1. [x] 运行 `python build_kg_atom.py` 测试 ATOM 提取
+2. [x] 检查输出 JSON 包含时序字段
+3. [x] Neo4j Browser 验证节点和关系数量一致性
+4. [x] Cypher 查询 `MATCH (n) RETURN n.atom_t_obs` 返回时序值
 

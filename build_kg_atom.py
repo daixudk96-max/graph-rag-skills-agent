@@ -33,7 +33,7 @@ PROJECT_ROOT = Path(__file__).parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv(".env")
 
 from rich.console import Console
 from rich.panel import Panel
@@ -74,6 +74,9 @@ def load_text_chunks(input_path: Path) -> List[str]:
         文本块列表
     """
     if input_path.is_file():
+        if input_path.suffix.lower() == ".txt":
+            console.print(f"[cyan]从文本文件加载: {input_path.name}[/cyan]")
+            return _simple_chunk_text(input_path.read_text(encoding="utf-8"))
         return _load_chunks_from_json(input_path)
     elif input_path.is_dir():
         return _load_chunks_from_directory(input_path)
@@ -179,12 +182,12 @@ def build_temporal_knowledge_graph(
         embeddings_model=embeddings,
     )
     
-    console.print(f"  [green]✓[/green] LLM: {llm.model_name}")
-    console.print(f"  [green]✓[/green] Embeddings: 已初始化")
+    console.print(f"  [green][OK][/green] LLM: {llm.model_name}")
+    console.print(f"  [green][OK][/green] Embeddings: 已初始化")
     
     # 使用观察时间
     obs_time = observation_time or datetime.now(timezone.utc).isoformat()
-    console.print(f"  [green]✓[/green] 观察时间: {obs_time}")
+    console.print(f"  [green][OK][/green] 观察时间: {obs_time}")
     
     # 提取时序知识图谱
     console.print(f"\n[bold yellow]提取时序知识图谱 ({len(chunks)} 个文本块)...[/bold yellow]")
@@ -203,8 +206,8 @@ def build_temporal_knowledge_graph(
         
         progress.update(task, completed=True)
     
-    console.print(f"  [green]✓[/green] 实体数量: {len(temporal_kg.entities)}")
-    console.print(f"  [green]✓[/green] 关系数量: {len(temporal_kg.relationships)}")
+    console.print(f"  [green][OK][/green] 实体数量: {len(temporal_kg.entities)}")
+    console.print(f"  [green][OK][/green] 关系数量: {len(temporal_kg.relationships)}")
     
     return temporal_kg
 
@@ -236,8 +239,8 @@ def write_to_neo4j(
     # 写入数据
     stats = writer.write_temporal_kg(temporal_kg, merge_strategy=merge_strategy)
     
-    console.print(f"  [green]✓[/green] 写入实体: {stats.get('entities', 0)}")
-    console.print(f"  [green]✓[/green] 写入关系: {stats.get('relationships', 0)}")
+    console.print(f"  [green][OK][/green] 写入实体: {stats.get('entities', 0)}")
+    console.print(f"  [green][OK][/green] 写入关系: {stats.get('relationships', 0)}")
     
     return stats
 
@@ -280,7 +283,7 @@ def save_output(
         encoding="utf-8",
     )
     
-    console.print(f"  [green]✓[/green] 输出文件: {output_file}")
+    console.print(f"  [green][OK][/green] 输出文件: {output_file}")
     
     return output_file
 
@@ -332,7 +335,7 @@ def main():
         # Step 1: 加载文本块
         console.print("\n[bold yellow]Step 1: 加载文本块[/bold yellow]")
         chunks = load_text_chunks(args.input)
-        console.print(f"  [green]✓[/green] 加载 {len(chunks)} 个文本块")
+        console.print(f"  [green][OK][/green] 加载 {len(chunks)} 个文本块")
         
         # Step 2: 构建时序知识图谱
         console.print("\n[bold yellow]Step 2: 构建时序知识图谱[/bold yellow]")
@@ -381,7 +384,7 @@ def _display_extraction_summary(temporal_kg: "TemporalKnowledgeGraph") -> None:
         entity_table.add_column("嵌入", style="yellow")
         
         for entity in temporal_kg.entities[:10]:
-            has_emb = "✓" if entity.embeddings else "-"
+            has_emb = "[OK]" if entity.embeddings else "-"
             entity_table.add_row(
                 entity.name[:30],
                 entity.label,
@@ -399,7 +402,7 @@ def _display_extraction_summary(temporal_kg: "TemporalKnowledgeGraph") -> None:
         rel_table.add_column("时序", style="yellow")
         
         for rel in temporal_kg.relationships[:10]:
-            has_temporal = "✓" if rel.t_obs or rel.t_start else "-"
+            has_temporal = "[OK]" if rel.t_obs or rel.t_start else "-"
             rel_table.add_row(
                 rel.source_id[:20],
                 rel.type[:15],
@@ -417,7 +420,7 @@ def _display_completion_summary(
 ) -> None:
     """显示完成摘要"""
     summary_lines = [
-        "[bold green]✓ 时序知识图谱构建完成！[/bold green]\n",
+        "[bold green][OK] 时序知识图谱构建完成！[/bold green]\n",
         f"实体数: {len(temporal_kg.entities)}",
         f"关系数: {len(temporal_kg.relationships)}",
     ]

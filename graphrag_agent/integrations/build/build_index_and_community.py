@@ -38,7 +38,7 @@ class IndexCommunityBuilder:
     def __init__(self):
         """初始化索引和社区构建器"""
         # 初始化终端界面
-        self.console = Console()
+        self.console = Console(legacy_windows=True)
         
         # 阶段性能统计 - 确保在_initialize_components之前定义
         self.performance_stats = {
