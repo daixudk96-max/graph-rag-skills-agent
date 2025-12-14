@@ -1,0 +1,257 @@
+{
+  "build_time": "2025-12-14T15:32:02.670711",
+  "statistics": {
+    "documents": 10,
+    "chunks": 58,
+    "entities": 10,
+    "relations": 20
+  },
+  "entities": [
+    {
+      "id": "e_0_7",
+      "name": "本科生",
+      "type": "学生类型",
+      "properties": {
+        "学历层次": "本科"
+      }
+    },
+    {
+      "id": "e_0_8",
+      "name": "华东理工大学",
+      "type": "组织机构",
+      "properties": {
+        "类型": "高校"
+      }
+    },
+    {
+      "id": "e_9_10",
+      "name": "综合成绩要求",
+      "type": "评选条件",
+      "properties": {
+        "计算公式": "必修课程平均成绩×85%+德育考核成绩×15%"
+      }
+    },
+    {
+      "id": "e_35_1",
+      "name": "国家奖学金",
+      "type": "奖学金类型",
+      "properties": {
+        "级别": "国家级",
+        "金额": "8000元/人/年"
+      }
+    },
+    {
+      "id": "e_35_3",
+      "name": "上海市奖学金",
+      "type": "奖学金类型",
+      "properties": {
+        "级别": "市级"
+      }
+    },
+    {
+      "id": "e_38_2",
+      "name": "国家励志奖学金",
+      "type": "奖学金类型",
+      "properties": {
+        "级别": "国家级",
+        "金额": "5000元/人/年"
+      }
+    },
+    {
+      "id": "e_39_4",
+      "name": "优秀奖学金",
+      "type": "奖学金类型",
+      "properties": {
+        "级别": "校级"
+      }
+    },
+    {
+      "id": "e_49_9",
+      "name": "本科生奖惩评审委员会",
+      "type": "组织机构",
+      "properties": {
+        "职能": "评审奖学金"
+      }
+    },
+    {
+      "id": "e_51_5",
+      "name": "特等奖学金",
+      "type": "金额等级",
+      "properties": {
+        "金额": "5000元/人/学年",
+        "比例": "2%"
+      }
+    },
+    {
+      "id": "e_51_6",
+      "name": "一等奖学金",
+      "type": "金额等级",
+      "properties": {
+        "金额": "3000元/人/学年",
+        "比例": "3%"
+      }
+    }
+  ],
+  "relations": [
+    {
+      "source": "e_0_7",
+      "target": "e_0_8",
+      "type": "要求",
+      "properties": {
+        "来源": "chunk_54"
+      }
+    },
+    {
+      "source": "e_0_8",
+      "target": "e_9_10",
+      "type": "要求",
+      "properties": {
+        "来源": "chunk_54"
+      }
+    },
+    {
+      "source": "e_35_1",
+      "target": "e_35_3",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_35"
+      }
+    },
+    {
+      "source": "e_35_3",
+      "target": "e_0_7",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_46"
+      }
+    },
+    {
+      "source": "e_35_1",
+      "target": "e_38_2",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_49"
+      }
+    },
+    {
+      "source": "e_38_2",
+      "target": "e_35_3",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_49"
+      }
+    },
+    {
+      "source": "e_35_3",
+      "target": "e_39_4",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_49"
+      }
+    },
+    {
+      "source": "e_38_2",
+      "target": "e_39_4",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_40"
+      }
+    },
+    {
+      "source": "e_39_4",
+      "target": "e_0_7",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_54"
+      }
+    },
+    {
+      "source": "e_39_4",
+      "target": "e_0_8",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_47"
+      }
+    },
+    {
+      "source": "e_35_1",
+      "target": "e_0_7",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_48"
+      }
+    },
+    {
+      "source": "e_35_1",
+      "target": "e_39_4",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_47"
+      }
+    },
+    {
+      "source": "e_0_7",
+      "target": "e_49_9",
+      "type": "要求",
+      "properties": {
+        "来源": "chunk_51"
+      }
+    },
+    {
+      "source": "e_39_4",
+      "target": "e_51_5",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_51"
+      }
+    },
+    {
+      "source": "e_51_5",
+      "target": "e_51_6",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_51"
+      }
+    },
+    {
+      "source": "e_51_6",
+      "target": "e_0_7",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_51"
+      }
+    },
+    {
+      "source": "e_49_9",
+      "target": "e_9_10",
+      "type": "要求",
+      "properties": {
+        "来源": "chunk_53"
+      }
+    },
+    {
+      "source": "e_0_7",
+      "target": "e_9_10",
+      "type": "要求",
+      "properties": {
+        "来源": "chunk_52"
+      }
+    },
+    {
+      "source": "e_0_8",
+      "target": "e_49_9",
+      "type": "要求",
+      "properties": {
+        "来源": "chunk_53"
+      }
+    },
+    {
+      "source": "e_39_4",
+      "target": "e_9_10",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_55"
+      }
+    }
+  ]
+}

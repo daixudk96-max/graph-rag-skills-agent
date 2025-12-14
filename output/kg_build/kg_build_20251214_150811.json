@@ -1,0 +1,513 @@
+{
+  "build_time": "2025-12-14T15:08:11.410463",
+  "statistics": {
+    "documents": 10,
+    "chunks": 58,
+    "entities": 10,
+    "relations": 52
+  },
+  "entities": [
+    {
+      "id": "e_0_7",
+      "name": "本科生",
+      "type": "学生类型",
+      "properties": {
+        "学历层次": "本科"
+      }
+    },
+    {
+      "id": "e_0_8",
+      "name": "华东理工大学",
+      "type": "组织机构",
+      "properties": {
+        "类型": "高校"
+      }
+    },
+    {
+      "id": "e_9_10",
+      "name": "综合成绩要求",
+      "type": "评选条件",
+      "properties": {
+        "计算公式": "必修课程平均成绩×85%+德育考核成绩×15%"
+      }
+    },
+    {
+      "id": "e_35_1",
+      "name": "国家奖学金",
+      "type": "奖学金类型",
+      "properties": {
+        "级别": "国家级",
+        "金额": "8000元/人/年"
+      }
+    },
+    {
+      "id": "e_35_3",
+      "name": "上海市奖学金",
+      "type": "奖学金类型",
+      "properties": {
+        "级别": "市级"
+      }
+    },
+    {
+      "id": "e_38_2",
+      "name": "国家励志奖学金",
+      "type": "奖学金类型",
+      "properties": {
+        "级别": "国家级",
+        "金额": "5000元/人/年"
+      }
+    },
+    {
+      "id": "e_39_4",
+      "name": "优秀奖学金",
+      "type": "奖学金类型",
+      "properties": {
+        "级别": "校级"
+      }
+    },
+    {
+      "id": "e_49_9",
+      "name": "本科生奖惩评审委员会",
+      "type": "组织机构",
+      "properties": {
+        "职能": "评审奖学金"
+      }
+    },
+    {
+      "id": "e_51_5",
+      "name": "特等奖学金",
+      "type": "金额等级",
+      "properties": {
+        "金额": "5000元/人/学年",
+        "比例": "2%"
+      }
+    },
+    {
+      "id": "e_51_6",
+      "name": "一等奖学金",
+      "type": "金额等级",
+      "properties": {
+        "金额": "3000元/人/学年",
+        "比例": "3%"
+      }
+    }
+  ],
+  "relations": [
+    {
+      "source": "e_0_7",
+      "target": "e_0_8",
+      "type": "要求",
+      "properties": {
+        "来源": "chunk_0"
+      }
+    },
+    {
+      "source": "e_9_8",
+      "target": "e_9_10",
+      "type": "要求",
+      "properties": {
+        "来源": "chunk_9"
+      }
+    },
+    {
+      "source": "e_12_7",
+      "target": "e_12_8",
+      "type": "要求",
+      "properties": {
+        "来源": "chunk_12"
+      }
+    },
+    {
+      "source": "e_20_7",
+      "target": "e_20_8",
+      "type": "要求",
+      "properties": {
+        "来源": "chunk_20"
+      }
+    },
+    {
+      "source": "e_26_7",
+      "target": "e_26_8",
+      "type": "要求",
+      "properties": {
+        "来源": "chunk_26"
+      }
+    },
+    {
+      "source": "e_35_1",
+      "target": "e_35_3",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_35"
+      }
+    },
+    {
+      "source": "e_35_3",
+      "target": "e_35_7",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_35"
+      }
+    },
+    {
+      "source": "e_35_7",
+      "target": "e_35_8",
+      "type": "要求",
+      "properties": {
+        "来源": "chunk_35"
+      }
+    },
+    {
+      "source": "e_38_1",
+      "target": "e_38_2",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_38"
+      }
+    },
+    {
+      "source": "e_38_2",
+      "target": "e_38_3",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_38"
+      }
+    },
+    {
+      "source": "e_38_3",
+      "target": "e_38_7",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_38"
+      }
+    },
+    {
+      "source": "e_39_3",
+      "target": "e_39_4",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_39"
+      }
+    },
+    {
+      "source": "e_40_2",
+      "target": "e_40_4",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_40"
+      }
+    },
+    {
+      "source": "e_40_4",
+      "target": "e_40_7",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_40"
+      }
+    },
+    {
+      "source": "e_40_7",
+      "target": "e_40_8",
+      "type": "要求",
+      "properties": {
+        "来源": "chunk_40"
+      }
+    },
+    {
+      "source": "e_41_1",
+      "target": "e_41_2",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_41"
+      }
+    },
+    {
+      "source": "e_41_2",
+      "target": "e_41_3",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_41"
+      }
+    },
+    {
+      "source": "e_41_3",
+      "target": "e_41_4",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_41"
+      }
+    },
+    {
+      "source": "e_41_4",
+      "target": "e_41_7",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_41"
+      }
+    },
+    {
+      "source": "e_42_2",
+      "target": "e_42_3",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_42"
+      }
+    },
+    {
+      "source": "e_42_3",
+      "target": "e_42_4",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_42"
+      }
+    },
+    {
+      "source": "e_42_4",
+      "target": "e_42_8",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_42"
+      }
+    },
+    {
+      "source": "e_43_1",
+      "target": "e_43_7",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_43"
+      }
+    },
+    {
+      "source": "e_43_7",
+      "target": "e_43_8",
+      "type": "要求",
+      "properties": {
+        "来源": "chunk_43"
+      }
+    },
+    {
+      "source": "e_46_1",
+      "target": "e_46_2",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_46"
+      }
+    },
+    {
+      "source": "e_46_2",
+      "target": "e_46_3",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_46"
+      }
+    },
+    {
+      "source": "e_46_3",
+      "target": "e_46_7",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_46"
+      }
+    },
+    {
+      "source": "e_47_1",
+      "target": "e_47_4",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_47"
+      }
+    },
+    {
+      "source": "e_47_4",
+      "target": "e_47_8",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_47"
+      }
+    },
+    {
+      "source": "e_48_1",
+      "target": "e_48_7",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_48"
+      }
+    },
+    {
+      "source": "e_48_7",
+      "target": "e_48_8",
+      "type": "要求",
+      "properties": {
+        "来源": "chunk_48"
+      }
+    },
+    {
+      "source": "e_49_1",
+      "target": "e_49_2",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_49"
+      }
+    },
+    {
+      "source": "e_49_2",
+      "target": "e_49_3",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_49"
+      }
+    },
+    {
+      "source": "e_49_3",
+      "target": "e_49_4",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_49"
+      }
+    },
+    {
+      "source": "e_49_4",
+      "target": "e_49_7",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_49"
+      }
+    },
+    {
+      "source": "e_49_7",
+      "target": "e_49_9",
+      "type": "要求",
+      "properties": {
+        "来源": "chunk_49"
+      }
+    },
+    {
+      "source": "e_50_4",
+      "target": "e_50_7",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_50"
+      }
+    },
+    {
+      "source": "e_50_7",
+      "target": "e_50_9",
+      "type": "要求",
+      "properties": {
+        "来源": "chunk_50"
+      }
+    },
+    {
+      "source": "e_51_4",
+      "target": "e_51_5",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_51"
+      }
+    },
+    {
+      "source": "e_51_5",
+      "target": "e_51_6",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_51"
+      }
+    },
+    {
+      "source": "e_51_6",
+      "target": "e_51_7",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_51"
+      }
+    },
+    {
+      "source": "e_51_7",
+      "target": "e_51_9",
+      "type": "要求",
+      "properties": {
+        "来源": "chunk_51"
+      }
+    },
+    {
+      "source": "e_51_9",
+      "target": "e_51_10",
+      "type": "要求",
+      "properties": {
+        "来源": "chunk_51"
+      }
+    },
+    {
+      "source": "e_52_7",
+      "target": "e_52_10",
+      "type": "要求",
+      "properties": {
+        "来源": "chunk_52"
+      }
+    },
+    {
+      "source": "e_53_4",
+      "target": "e_53_7",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_53"
+      }
+    },
+    {
+      "source": "e_53_7",
+      "target": "e_53_8",
+      "type": "要求",
+      "properties": {
+        "来源": "chunk_53"
+      }
+    },
+    {
+      "source": "e_53_8",
+      "target": "e_53_9",
+      "type": "要求",
+      "properties": {
+        "来源": "chunk_53"
+      }
+    },
+    {
+      "source": "e_53_9",
+      "target": "e_53_10",
+      "type": "要求",
+      "properties": {
+        "来源": "chunk_53"
+      }
+    },
+    {
+      "source": "e_54_4",
+      "target": "e_54_7",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_54"
+      }
+    },
+    {
+      "source": "e_54_7",
+      "target": "e_54_8",
+      "type": "要求",
+      "properties": {
+        "来源": "chunk_54"
+      }
+    },
+    {
+      "source": "e_54_8",
+      "target": "e_54_10",
+      "type": "要求",
+      "properties": {
+        "来源": "chunk_54"
+      }
+    },
+    {
+      "source": "e_55_4",
+      "target": "e_55_10",
+      "type": "属于",
+      "properties": {
+        "来源": "chunk_55"
+      }
+    }
+  ]
+}
