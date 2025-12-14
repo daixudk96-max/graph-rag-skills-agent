@@ -307,3 +307,7 @@ class ChineseTextChunker:
             stats['max_segment_length'] = max(len(seg) for seg in segments) if segments else 0
             
         return stats
+
+
+# 兼容别名，允许使用 TextChunker 作为导入名
+TextChunker = ChineseTextChunker
