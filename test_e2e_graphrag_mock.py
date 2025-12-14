@@ -270,7 +270,7 @@ try:
     
     chunker = TextChunker()
     test_text = "这是一个测试文本。" * 100  # 创建一段较长的测试文本
-    chunks = chunker.split(test_text)
+    chunks = chunker.chunk_text(test_text)
     print(f"   输入文本长度: {len(test_text)}")
     print(f"   分块数量: {len(chunks)}")
     log_success("文本分块测试", f"成功分块为 {len(chunks)} 个chunks")
@@ -287,13 +287,18 @@ print("-" * 40)
 # Test 4.1: EntityRelationExtractor 测试
 print("\n4.1 EntityRelationExtractor 测试...")
 try:
-    from graphrag_agent.graph.extraction.entity_relation_extractor import EntityRelationExtractor
+    from graphrag_agent.graph.extraction.entity_extractor import EntityRelationExtractor
     
-    # 使用 mock 模型
+    # 使用 mock 模型和正确的构造函数参数
+    system_template = "你是一个知识图谱提取助手。请从给定文本中提取实体和关系。"
+    human_template = "请从以下文本中提取实体和关系:\n{text}"
+    
     extractor = EntityRelationExtractor(
         llm=mock_llm,
-        allowed_entities=["学生类型", "奖学金类型"],
-        allowed_relationships=["申请", "评定"]
+        system_template=system_template,
+        human_template=human_template,
+        entity_types=["学生类型", "奖学金类型"],
+        relationship_types=["申请", "评定"]
     )
     
     # 测试提取
@@ -384,7 +389,7 @@ print("-" * 40)
 # Test 6.1: GraphWriter 测试
 print("\n6.1 GraphWriter 测试...")
 try:
-    from graphrag_agent.graph.core.graph_writer import GraphWriter
+    from graphrag_agent.graph.extraction.graph_writer import GraphWriter
     
     # 创建 mock graph
     mock_graph = create_mock_neo4j_graph()
@@ -442,8 +447,8 @@ print("-" * 40)
 # Test 8.1: 搜索模块导入
 print("\n8.1 搜索模块导入...")
 try:
-    from graphrag_agent.search.local_search import local_search
-    from graphrag_agent.search.global_search import global_search
+    from graphrag_agent.search.local_search import LocalSearch
+    from graphrag_agent.search.global_search import GlobalSearch
     
     log_success("搜索模块导入", "搜索模块导入成功")
 except Exception as e:

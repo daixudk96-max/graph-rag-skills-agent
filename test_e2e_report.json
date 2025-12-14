@@ -1,52 +1,10 @@
 {
-  "test_time": "2025-12-14T12:00:41.504947",
+  "test_time": "2025-12-14T14:59:34.282193",
   "summary": {
-    "total_errors": 4,
+    "total_errors": 0,
     "total_warnings": 0,
-    "phases_with_errors": [
-      "Document",
-      "Neo4j",
-      "Extraction",
-      "Search"
-    ]
+    "phases_with_errors": []
   },
-  "errors": [
-    {
-      "test_name": "文本分块测试",
-      "phase": "Document",
-      "error_type": "AttributeError",
-      "error_message": "'ChineseTextChunker' object has no attribute 'split'",
-      "traceback": "Traceback (most recent call last):\n  File \"C:\\github\\graph-rag-agent\\test_e2e_graphrag_mock.py\", line 273, in <module>\n    chunks = chunker.split(test_text)\n             ^^^^^^^^^^^^^\nAttributeError: 'ChineseTextChunker' object has no attribute 'split'\n",
-      "context": "文本分块失败",
-      "timestamp": "2025-12-14T12:00:41.440923"
-    },
-    {
-      "test_name": "EntityRelationExtractor 测试",
-      "phase": "Extraction",
-      "error_type": "ModuleNotFoundError",
-      "error_message": "No module named 'graphrag_agent.graph.extraction.entity_relation_extractor'",
-      "traceback": "Traceback (most recent call last):\n  File \"C:\\github\\graph-rag-agent\\test_e2e_graphrag_mock.py\", line 290, in <module>\n    from graphrag_agent.graph.extraction.entity_relation_extractor import EntityRelationExtractor\nModuleNotFoundError: No module named 'graphrag_agent.graph.extraction.entity_relation_extractor'\n",
-      "context": "EntityRelationExtractor 初始化或提取失败",
-      "timestamp": "2025-12-14T12:00:41.453585"
-    },
-    {
-      "test_name": "GraphWriter 测试",
-      "phase": "Neo4j",
-      "error_type": "ModuleNotFoundError",
-      "error_message": "No module named 'graphrag_agent.graph.core.graph_writer'",
-      "traceback": "Traceback (most recent call last):\n  File \"C:\\github\\graph-rag-agent\\test_e2e_graphrag_mock.py\", line 387, in <module>\n    from graphrag_agent.graph.core.graph_writer import GraphWriter\nModuleNotFoundError: No module named 'graphrag_agent.graph.core.graph_writer'\n",
-      "context": "GraphWriter 模块导入或初始化失败",
-      "timestamp": "2025-12-14T12:00:41.481492"
-    },
-    {
-      "test_name": "搜索模块导入",
-      "phase": "Search",
-      "error_type": "ImportError",
-      "error_message": "cannot import name 'local_search' from 'graphrag_agent.search.local_search' (C:\\github\\graph-rag-agent\\graphrag_agent\\search\\local_search.py)",
-      "traceback": "Traceback (most recent call last):\n  File \"C:\\github\\graph-rag-agent\\test_e2e_graphrag_mock.py\", line 445, in <module>\n    from graphrag_agent.search.local_search import local_search\nImportError: cannot import name 'local_search' from 'graphrag_agent.search.local_search' (C:\\github\\graph-rag-agent\\graphrag_agent\\search\\local_search.py)\n",
-      "context": "搜索模块导入失败",
-      "timestamp": "2025-12-14T12:00:41.487522"
-    }
-  ],
+  "errors": [],
   "warnings": []
 }
