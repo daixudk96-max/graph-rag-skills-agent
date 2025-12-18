@@ -36,8 +36,18 @@ test_*.py
 verify_*.py
 **/test_*.py
 **/verify_*.py
+
+# Output and log files
 verification_output.txt
 e2e_test_output.txt
+validation_output*.txt
+integration_output.txt
+live_test_output.txt
+test_output.txt
+test_atom_results.txt
+debug_*.txt
+query_result*.txt
+archive_log.txt
 test_*.json
 *.log
 
