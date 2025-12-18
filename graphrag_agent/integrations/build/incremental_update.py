@@ -205,13 +205,20 @@ class IncrementalUpdateManager:
             self.stats["errors"] += 1
             return {"error": str(e)}
     
-    def detect_communities(self):
+    def detect_communities(self, mode: str = "auto", touched_communities: dict = None):
         """
         执行社区检测和摘要生成
+        
+        Args:
+            mode: Summary mode - "auto" (uses DSA if enabled), "full", "delta", or "compact"
+            touched_communities: Dict mapping community_id -> list of changed entity_ids.
+                                Used for delta mode to generate incremental summaries.
         
         Returns:
             Dict: 社区检测结果
         """
+        from graphrag_agent.config.settings import DSA_ENABLED, DSA_COMPACTION_ENABLED
+        
         self.console.print("[bold cyan]执行社区检测...[/bold cyan]")
         
         try:
@@ -248,20 +255,46 @@ class IncrementalUpdateManager:
                 # 更新统计信息
                 self.stats["communities_detected"] += community_count
                 
+                # Determine summary mode
+                summary_mode = mode
+                if mode == "auto":
+                    # Use delta mode if DSA is enabled and we have touched_communities
+                    if DSA_ENABLED and touched_communities:
+                        summary_mode = "delta"
+                        self.console.print("[blue]使用DSA增量摘要模式...[/blue]")
+                    else:
+                        summary_mode = "full"
+                
                 # 执行社区摘要生成
-                self.console.print("[blue]开始生成社区摘要...[/blue]")
+                self.console.print(f"[blue]开始生成社区摘要 (mode={summary_mode})...[/blue]")
                 summarizer = CommunitySummarizerFactory.create_summarizer(
                     community_algorithm,
                     graph
                 )
-                summaries = summarizer.process_communities()
                 
-                self.console.print(f"[green]社区摘要生成完成，共生成 {len(summaries) if summaries else 0} 个摘要[/green]")
+                # Use appropriate mode
+                if summary_mode == "delta" and touched_communities:
+                    summaries = summarizer.process_communities(
+                        mode="delta",
+                        targets=touched_communities
+                    )
+                    self.console.print(f"[green]增量摘要生成完成，共生成 {len(summaries) if summaries else 0} 个delta摘要[/green]")
+                elif summary_mode == "compact":
+                    summaries = summarizer.process_communities(mode="compact")
+                    self.console.print(f"[green]摘要压缩完成[/green]")
+                else:
+                    summaries = summarizer.process_communities(mode="full")
+                    self.console.print(f"[green]社区摘要生成完成，共生成 {len(summaries) if summaries else 0} 个摘要[/green]")
+                
+                # Optionally run compaction if enabled
+                if DSA_ENABLED and DSA_COMPACTION_ENABLED and summary_mode != "compact":
+                    self._maybe_run_compaction(graph)
                 
                 return {
                     "status": "success", 
                     "communities": community_count,
-                    "summaries": len(summaries) if summaries else 0
+                    "summaries": len(summaries) if summaries else 0,
+                    "mode": summary_mode
                 }
             else:
                 self.console.print(f"[yellow]社区检测失败: {detection_result.get('message', '未知错误')}[/yellow]")
@@ -270,6 +303,53 @@ class IncrementalUpdateManager:
         except Exception as e:
             self.console.print(f"[red]执行社区检测时出错: {e}[/red]")
             self.stats["errors"] += 1
+            return {"status": "error", "message": str(e)}
+    
+    def _maybe_run_compaction(self, graph):
+        """
+        Check if any communities need compaction and run if threshold exceeded.
+        
+        Args:
+            graph: Neo4j graph connection
+        """
+        try:
+            from graphrag_agent.community.summary.compaction import CommunityCompactor
+            compactor = CommunityCompactor(graph)
+            
+            # Check if any community needs compaction
+            needs_compaction = self.graph.query("""
+            MATCH (c:__Community__)<-[:DELTA_OF]-(d:__CommunityDelta__)
+            WITH c.id AS community_id, count(d) AS delta_count
+            WHERE delta_count >= $threshold
+            RETURN count(community_id) AS communities_needing_compaction
+            """, params={"threshold": 5})  # Use DSA_DELTA_COUNT_THRESHOLD
+            
+            count = needs_compaction[0]["communities_needing_compaction"] if needs_compaction else 0
+            if count > 0:
+                self.console.print(f"[blue]发现 {count} 个社区需要压缩，开始后台压缩...[/blue]")
+                compactor.compact_all()
+                self.console.print("[green]后台压缩完成[/green]")
+        except Exception as e:
+            self.console.print(f"[yellow]压缩检查失败: {e}[/yellow]")
+    
+    def run_compaction(self):
+        """
+        Manually trigger DSA compaction for all communities exceeding thresholds.
+        
+        Returns:
+            Dict: Compaction results
+        """
+        self.console.print("[bold cyan]执行DSA压缩...[/bold cyan]")
+        
+        try:
+            from graphrag_agent.community.summary.compaction import CommunityCompactor
+            compactor = CommunityCompactor(self.graph)
+            results = compactor.compact_all()
+            
+            self.console.print(f"[green]压缩完成，处理了 {len(results) if results else 0} 个社区[/green]")
+            return {"status": "success", "compacted": len(results) if results else 0}
+        except Exception as e:
+            self.console.print(f"[red]压缩失败: {e}[/red]")
             return {"status": "error", "message": str(e)}
     
     def sync_manual_edits(self, changed_files=None):
@@ -412,6 +492,8 @@ class IncrementalUpdateManager:
         """
         启动调度器，开始后台运行增量更新流程
         """
+        from graphrag_agent.config.settings import DSA_ENABLED, DSA_COMPACTION_ENABLED
+        
         self.console.print("[bold cyan]启动增量更新调度器...[/bold cyan]")
         
         # 注册处理方法
@@ -421,6 +503,11 @@ class IncrementalUpdateManager:
         self.scheduler.schedule_component("graph_consistency", self.verify_graph_consistency)
         self.scheduler.schedule_component("community_detection", self.detect_communities)
         self.scheduler.schedule_component("manual_edit_check", self.check_manual_edits)
+        
+        # Register DSA compaction as optional background task (Task 5.2)
+        if DSA_ENABLED and DSA_COMPACTION_ENABLED:
+            self.scheduler.schedule_component("dsa_compaction", self.run_compaction)
+            self.console.print("[blue]DSA压缩调度已启用[/blue]")
         
         # 启动调度器
         self.stop_event = self.scheduler.start()

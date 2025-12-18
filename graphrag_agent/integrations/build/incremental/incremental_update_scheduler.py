@@ -35,7 +35,8 @@ class IncrementalUpdateScheduler:
             "chunk_embedding_threshold": 1800,  # 30分钟
             "graph_consistency_threshold": 86400,  # 24小时
             "community_detection_threshold": 172800,  # 48小时
-            "manual_edit_check_threshold": 604800  # 7天
+            "manual_edit_check_threshold": 604800,  # 7天
+            "dsa_compaction_threshold": 3600,  # 1小时 - DSA delta压缩检查
         }
         
         # 合并用户配置
@@ -294,7 +295,8 @@ class IncrementalUpdateScheduler:
             ("Chunk Embedding", "chunk_embedding_threshold"),
             ("图结构完整性", "graph_consistency_threshold"),
             ("社区检测", "community_detection_threshold"),
-            ("手动编辑检查", "manual_edit_check_threshold")
+            ("手动编辑检查", "manual_edit_check_threshold"),
+            ("DSA压缩", "dsa_compaction_threshold")
         ]:
             # 获取上次更新时间
             last_update = self.last_run.get(component.lower().replace(" ", "_"), None)

@@ -85,7 +85,7 @@ class LocalSearch:
     @property
     def retrieval_query(self) -> str:
         """
-        获取Neo4j检索查询语句
+        获取Neo4j检索查询语句，包含DSA delta合并
         
         返回:
             str: Cypher查询语句，用于检索相关内容
@@ -105,7 +105,16 @@ class LocalSearch:
             UNWIND nodes as n
             MATCH (n)-[:IN_COMMUNITY]->(c:__Community__)
             WITH distinct c, c.community_rank as rank, c.weight AS weight
-            RETURN c.summary 
+            OPTIONAL MATCH (c)-[:HAS_DELTA]->(d:__CommunityDelta__ {status: 'pending'})
+            WITH c, rank, weight, d ORDER BY d.created_at ASC
+            WITH c, rank, weight, collect(d.summary) AS deltas
+            RETURN CASE 
+                WHEN size(deltas) > 0 
+                THEN coalesce(c.summary, '') + 
+                     '\n[Recent Updates]: ' + 
+                     reduce(s = '', item IN deltas | s + coalesce(item, '') + '; ')
+                ELSE c.summary 
+            END AS summary
             ORDER BY rank, weight DESC
             LIMIT $topCommunities
         } AS report_mapping,

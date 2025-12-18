@@ -121,7 +121,7 @@ class GlobalSearchTool(BaseSearchTool):
     
     def _get_community_data(self, keywords: List[str] = None) -> List[dict]:
         """
-        使用关键词检索社区数据
+        使用关键词检索社区数据，包含DSA delta合并
         
         参数:
             keywords: 关键词列表，用于过滤社区
@@ -129,7 +129,7 @@ class GlobalSearchTool(BaseSearchTool):
         返回:
             List[dict]: 社区数据列表
         """
-        # 构建基础查询
+        # 构建基础查询 with DSA delta merge
         cypher_query = """
         MATCH (c:__Community__)
         WHERE c.level = $level
@@ -148,12 +148,24 @@ class GlobalSearchTool(BaseSearchTool):
             if keywords_condition:
                 cypher_query += " AND (" + " OR ".join(keywords_condition) + ")"
         
-        # 添加排序和返回语句
+        # 添加DSA delta合并、排序和返回语句
         cypher_query += """
         WITH c
+        OPTIONAL MATCH (c)-[:HAS_DELTA]->(d:__CommunityDelta__ {status: 'pending'})
+        WITH c, d ORDER BY d.created_at ASC
+        WITH c, collect(d.summary) AS deltas
         ORDER BY c.community_rank DESC, c.weight DESC
         LIMIT 20
-        RETURN {communityId: c.id, full_content: c.full_content} AS output
+        RETURN {
+            communityId: c.id, 
+            full_content: CASE 
+                WHEN size(deltas) > 0 
+                THEN coalesce(c.full_content, c.summary, '') + 
+                     '\n\n[Recent Updates]:\n' + 
+                     reduce(s = '', item IN deltas | s + '- ' + coalesce(item, '') + '\n')
+                ELSE coalesce(c.full_content, c.summary, '')
+            END
+        } AS output
         """
         
         # 执行查询

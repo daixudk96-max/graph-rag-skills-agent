@@ -152,6 +152,14 @@ GDS_CONCURRENCY = _get_env_int("GDS_CONCURRENCY", 4) or 4  # GDS 并发度
 GDS_NODE_COUNT_LIMIT = _get_env_int("GDS_NODE_COUNT_LIMIT", 50000) or 50000  # 节点上限
 GDS_TIMEOUT_SECONDS = _get_env_int("GDS_TIMEOUT_SECONDS", 300) or 300  # 超时时长
 
+# ===== Delta-Summary Accumulation (DSA) 配置 =====
+# DSA 通过增量摘要累积减少 LLM 成本，参见 openspec/changes/add-delta-summary-accumulation
+
+DSA_ENABLED = _get_env_bool("DSA_ENABLED", True)  # 是否启用 DSA 策略
+DSA_DELTA_COUNT_THRESHOLD = _get_env_int("DSA_DELTA_COUNT_THRESHOLD", 5) or 5  # 触发压缩的 delta 数量阈值
+DSA_DELTA_TOKEN_THRESHOLD = _get_env_int("DSA_DELTA_TOKEN_THRESHOLD", 1000) or 1000  # 触发压缩的 token 阈值
+DSA_COMPACTION_ENABLED = _get_env_bool("DSA_COMPACTION_ENABLED", True)  # 是否启用后台压缩
+
 # ===== 实体消歧与对齐配置 =====
 
 DISAMBIG_STRING_THRESHOLD = _get_env_float("DISAMBIG_STRING_THRESHOLD", 0.7) or 0.7

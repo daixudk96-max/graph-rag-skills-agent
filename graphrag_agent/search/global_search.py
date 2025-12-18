@@ -41,19 +41,32 @@ class GlobalSearch:
         
     def _get_community_data(self, level: int) -> List[dict]:
         """
-        获取指定层级的社区数据
+        获取指定层级的社区数据，包含DSA delta合并
         
         参数:
             level: 社区层级
             
         返回:
-            List[dict]: 社区数据字典列表
+            List[dict]: 社区数据字典列表，full_content包含合并后的delta
         """
+        # DSA read-path merge: base + pending deltas
         return self.graph.query(
             """
             MATCH (c:__Community__)
             WHERE c.level = $level
-            RETURN {communityId:c.id, full_content:c.full_content} AS output
+            OPTIONAL MATCH (c)-[:HAS_DELTA]->(d:__CommunityDelta__ {status: 'pending'})
+            WITH c, d ORDER BY d.created_at ASC
+            WITH c, collect(d.summary) AS delta_summaries
+            RETURN {
+                communityId: c.id, 
+                full_content: CASE 
+                    WHEN size(delta_summaries) > 0 
+                    THEN coalesce(c.full_content, c.summary, '') + 
+                         '\n\n[Recent Updates]:\n' + 
+                         reduce(s = '', item IN delta_summaries | s + '- ' + coalesce(item, '') + '\n')
+                    ELSE coalesce(c.full_content, c.summary, '')
+                END
+            } AS output
             """,
             params={"level": level},
         )

@@ -3,6 +3,8 @@ from typing import Union
 from .base import BaseSummarizer
 from .leiden import LeidenSummarizer
 from .sllpa import SLLPASummarizer
+from .delta import DeltaSummarizer
+from .compaction import CommunityCompactor
 
 class CommunitySummarizerFactory:
     """社区摘要生成器工厂类"""
@@ -34,4 +36,5 @@ class CommunitySummarizerFactory:
         return summarizer_class(graph)
 
 __all__ = ['CommunitySummarizerFactory', 'BaseSummarizer', 
-           'LeidenSummarizer', 'SLLPASummarizer']
+           'LeidenSummarizer', 'SLLPASummarizer',
+           'DeltaSummarizer', 'CommunityCompactor']

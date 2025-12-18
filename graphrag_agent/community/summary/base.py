@@ -1,14 +1,17 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict
+from typing import List, Dict, Optional, Literal
 from langchain_community.graphs import Neo4jGraph
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from graphrag_agent.models.get_models import get_llm_model
 import concurrent.futures
 import time
+import logging
 
-from graphrag_agent.config.settings import MAX_WORKERS
+from graphrag_agent.config.settings import MAX_WORKERS, DSA_ENABLED
 from graphrag_agent.config.prompts import COMMUNITY_SUMMARY_PROMPT
+
+logger = logging.getLogger(__name__)
 
 class BaseCommunityDescriber:
     """社区信息格式化工具"""
@@ -171,9 +174,42 @@ class BaseSummarizer(ABC):
         """收集社区信息的抽象方法"""
         pass
 
-    def process_communities(self) -> List[Dict]:
-        """处理所有社区"""
+    def process_communities(
+        self,
+        mode: Literal["full", "delta", "compact"] = "full",
+        targets: Optional[Dict[str, List[str]]] = None
+    ) -> List[Dict]:
+        """
+        Process community summaries with support for DSA modes.
+        
+        Args:
+            mode: Processing mode:
+                - "full": Traditional full regeneration (default)
+                - "delta": Generate delta summaries for affected communities
+                - "compact": Merge deltas into base summaries
+            targets: For delta mode, dict mapping community_id -> entity_ids.
+                    Ignored for full/compact modes.
+        
+        Returns:
+            List of summary result dicts
+        """
         total_start_time = time.time()
+        
+        # Handle delta mode - delegate to DeltaSummarizer
+        if mode == "delta" and DSA_ENABLED:
+            logger.info("Processing communities in delta mode")
+            from graphrag_agent.community.summary.delta import DeltaSummarizer
+            delta_summarizer = DeltaSummarizer(self.graph)
+            return delta_summarizer.process_deltas(targets)
+        
+        # Handle compact mode - delegate to CommunityCompactor
+        if mode == "compact" and DSA_ENABLED:
+            logger.info("Processing communities in compact mode")
+            from graphrag_agent.community.summary.compaction import CommunityCompactor
+            compactor = CommunityCompactor(self.graph)
+            return compactor.compact_all()
+        
+        # Full mode - existing behavior
         print("开始处理社区摘要...")
         
         try:

@@ -1,0 +1,27 @@
+C:\Python311\Lib\site-packages\torch\cuda\__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+Test 1: DSA Configuration
+  DSA_ENABLED=True
+  DSA_DELTA_COUNT_THRESHOLD=5
+  DSA_DELTA_TOKEN_THRESHOLD=1000
+  DSA_COMPACTION_ENABLED=True
+  [PASS]
+
+Test 2: DSA Schema Module
+  [PASS] Module imported
+
+Test 3: LeidenSummarizer.collect_delta_info
+  Params: ['self', 'community_id', 'changed_entity_ids']
+  [PASS]
+
+Test 4: Scheduler DSA Config
+  dsa_compaction_threshold=3600
+  [PASS]
+
+Test 5: BaseSummarizer mode parameter
+  Params: ['self', 'mode', 'targets']
+  [PASS]
+
+========================================
+Results: 5 passed, 0 failed
+========================================

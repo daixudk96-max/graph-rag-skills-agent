@@ -81,11 +81,20 @@ class CommunityAwareSearchEnhancer:
         # 嵌入查询文本
         query_embedding = self.embeddings.embed_query(query)
         
-        # 查询社区信息
+        # 查询社区信息 with DSA delta merge
         community_query = """
         MATCH (c:__Community__)
         WHERE c.summary IS NOT NULL
-        RETURN c.id AS community_id, c.summary AS summary, 
+        OPTIONAL MATCH (c)-[:HAS_DELTA]->(d:__CommunityDelta__ {status: 'pending'})
+        WITH c, d ORDER BY d.created_at ASC
+        WITH c, collect(d.summary) AS deltas
+        RETURN c.id AS community_id, 
+               CASE 
+                   WHEN size(deltas) > 0 
+                   THEN c.summary + '\n[Updates]: ' + 
+                        reduce(s = '', item IN deltas | s + coalesce(item, '') + '; ')
+                   ELSE c.summary 
+               END AS summary, 
                c.community_rank AS rank
         ORDER BY c.community_rank DESC
         LIMIT 20

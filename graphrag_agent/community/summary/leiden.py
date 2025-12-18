@@ -150,6 +150,97 @@ class LeidenSummarizer(BaseSummarizer):
         
         return all_results
     
+    def collect_delta_info(self, community_id: str, changed_entity_ids: List[str]) -> Dict:
+        """
+        Collect information about recently added/modified entities for delta summary.
+        
+        This method supports DSA (Delta-Summary Accumulation) by querying only
+        the entities that have changed, rather than the entire community.
+        
+        Args:
+            community_id: Target community ID
+            changed_entity_ids: List of entity IDs that were recently added/modified
+            
+        Returns:
+            Dict with 'entities', 'relationships', and 'community_id' keys
+        """
+        if not changed_entity_ids:
+            return {
+                "community_id": community_id,
+                "entities": [],
+                "relationships": []
+            }
+        
+        try:
+            # Query only the changed entities and their relationships within the community
+            result = self.graph.query("""
+            // Get the specified entities that belong to this community
+            MATCH (c:__Community__ {id: $community_id})<-[:IN_COMMUNITY]-(e:__Entity__)
+            WHERE e.id IN $entity_ids
+            WITH c, collect(e) AS changed_nodes
+            
+            // Get relationships between changed entities
+            CALL {
+                WITH changed_nodes
+                MATCH (n1:__Entity__)
+                WHERE n1 IN changed_nodes
+                MATCH (n2:__Entity__)
+                WHERE n2 IN changed_nodes AND id(n1) < id(n2)
+                MATCH (n1)-[r]->(n2)
+                RETURN collect(distinct r) AS internal_rels
+            }
+            
+            // Get relationships from changed entities to other community members
+            CALL {
+                WITH c, changed_nodes
+                MATCH (c)<-[:IN_COMMUNITY]-(other:__Entity__)
+                WHERE NOT other IN changed_nodes
+                MATCH (changed:__Entity__)-[r]-(other)
+                WHERE changed IN changed_nodes
+                RETURN collect(distinct r) AS external_rels
+            }
+            
+            RETURN 
+                [n in changed_nodes | {
+                    id: n.id,
+                    description: n.description,
+                    type: CASE WHEN size([el in labels(n) WHERE el <> '__Entity__']) > 0
+                          THEN [el in labels(n) WHERE el <> '__Entity__'][0]
+                          ELSE 'Unknown' END
+                }] AS entities,
+                [r in internal_rels + external_rels | {
+                    start: startNode(r).id,
+                    type: type(r),
+                    end: endNode(r).id,
+                    description: r.description
+                }] AS relationships
+            """, params={
+                "community_id": community_id,
+                "entity_ids": changed_entity_ids
+            })
+            
+            if result:
+                return {
+                    "community_id": community_id,
+                    "entities": result[0].get("entities", []),
+                    "relationships": result[0].get("relationships", [])
+                }
+            else:
+                return {
+                    "community_id": community_id,
+                    "entities": [],
+                    "relationships": []
+                }
+                
+        except Exception as e:
+            print(f"收集增量实体信息失败 (社区 {community_id}): {e}")
+            return {
+                "community_id": community_id,
+                "entities": [],
+                "relationships": [],
+                "error": str(e)
+            }
+    
     def _collect_info_fallback(self) -> List[Dict]:
         """备用的信息收集方法"""
         try:
