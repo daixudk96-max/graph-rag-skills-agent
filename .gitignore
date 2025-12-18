@@ -38,18 +38,18 @@ verify_*.py
 **/verify_*.py
 
 # Output and log files
-verification_output.txt
-e2e_test_output.txt
+*_output.txt
+*_result.txt
+*_results.txt
 validation_output*.txt
-integration_output.txt
-live_test_output.txt
-test_output.txt
-test_atom_results.txt
 debug_*.txt
 query_result*.txt
 archive_log.txt
 test_*.json
 *.log
+
+# OpenSpec planning files (internal development)
+openspec/
 
 # Personal/Private files
 .gemini/
