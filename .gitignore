@@ -31,7 +31,11 @@ evaluation_results_no_golden/
 file_registry.json
 hotpot_dev_distractor_v1.json
 
-# Test output files
+# Test files (exclude all test and verification scripts)
+test_*.py
+verify_*.py
+**/test_*.py
+**/verify_*.py
 verification_output.txt
 e2e_test_output.txt
 test_*.json
@@ -46,3 +50,10 @@ private/
 *.tmp
 *.temp
 *.bak
+
+# Spec_Skill_Seekers test directory
+Spec_Skill_Seekers/tests/
+
+# itext2kg tests
+itext2kg/tests/
+itext2kg/evaluation/
