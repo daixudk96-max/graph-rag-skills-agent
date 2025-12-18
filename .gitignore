@@ -1,16 +1,48 @@
+# IDE and editor
 .vscode/
-data/
+.idea/
+
+# Python cache
 __pycache__/
+*.pyc
+*.pyo
+*.egg-info/
 .ipynb_checkpoints/
 */.ipynb_checkpoints/*
-*.egg-info/
+
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+secrets/
+credentials/
+
+# Data and cache
+data/
 cache/
 lib/
-.env
+outputs/
+documents/
 evaluation_results/
 evaluation_results_with_golden/
 evaluation_results_no_golden/
 file_registry.json
-documents/
 hotpot_dev_distractor_v1.json
-outputs/
+
+# Test output files
+verification_output.txt
+e2e_test_output.txt
+test_*.json
+*.log
+
+# Personal/Private files
+.gemini/
+*.personal
+private/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak

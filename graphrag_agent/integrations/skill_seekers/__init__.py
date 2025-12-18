@@ -12,10 +12,34 @@ from .formatter import SkillInputFormatter
 from .deduplicator import ContentDeduplicator
 from .sync_manager import GraphRAGSkillSyncManager
 
+# Template system imports
+from .templates import (
+    TemplateRegistry,
+    Template,
+    TemplateInfo,
+    TemplateFiller,
+    FilledContent,
+    ValidationError,
+    TemplateMigrator,
+    MigrationReport,
+    TemplateEmbedder,
+)
+
 __all__ = [
     "ExportConfig",
     "GraphRAGExporter",
     "SkillInputFormatter",
     "ContentDeduplicator",
     "GraphRAGSkillSyncManager",
+    # Template system
+    "TemplateRegistry",
+    "Template",
+    "TemplateInfo",
+    "TemplateFiller",
+    "FilledContent",
+    "ValidationError",
+    "TemplateMigrator",
+    "MigrationReport",
+    "TemplateEmbedder",
 ]
+

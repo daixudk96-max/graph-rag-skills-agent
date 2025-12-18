@@ -1,0 +1,212 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://graph-rag-agent/templates/schema/template.schema.json",
+    "title": "Skill Seekers Template Schema",
+    "description": "JSON Schema for template definitions used in dynamic template mechanism.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Unique template identifier (e.g., 'transcript-segmented')"
+        },
+        "name": {
+            "type": "string",
+            "description": "Human-readable template name"
+        },
+        "version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+$",
+            "description": "Semantic version (e.g., '1.0.0')"
+        },
+        "description": {
+            "type": "string",
+            "description": "Template description and usage notes"
+        },
+        "segments": {
+            "type": "array",
+            "description": "Ordered list of content segments in the template",
+            "items": {
+                "$ref": "#/definitions/segment"
+            },
+            "minItems": 1
+        },
+        "metadata": {
+            "type": "object",
+            "description": "Additional template metadata",
+            "additionalProperties": true
+        }
+    },
+    "required": [
+        "id",
+        "version",
+        "segments"
+    ],
+    "additionalProperties": false,
+    "definitions": {
+        "segment": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Unique segment identifier within template"
+                },
+                "title": {
+                    "type": "string",
+                    "description": "Display title for the segment"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Segment description and guidance"
+                },
+                "required": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Whether this segment must be filled"
+                },
+                "repeatable": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Whether this segment can have multiple values"
+                },
+                "inputs": {
+                    "type": "array",
+                    "description": "Data source definitions for this segment",
+                    "items": {
+                        "$ref": "#/definitions/input"
+                    }
+                },
+                "transform": {
+                    "$ref": "#/definitions/transform",
+                    "description": "Content extraction/transformation rules"
+                },
+                "format": {
+                    "type": "string",
+                    "enum": [
+                        "markdown",
+                        "json",
+                        "plain",
+                        "html"
+                    ],
+                    "default": "markdown",
+                    "description": "Output format for segment content"
+                },
+                "constraints": {
+                    "$ref": "#/definitions/constraints",
+                    "description": "Validation constraints for segment content"
+                },
+                "relationships": {
+                    "type": "array",
+                    "description": "References to other segments this depends on",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "key",
+                "title"
+            ],
+            "additionalProperties": false
+        },
+        "input": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "transcript",
+                        "metadata",
+                        "entity",
+                        "relationship",
+                        "community"
+                    ],
+                    "description": "Type of input data source"
+                },
+                "selector": {
+                    "type": "object",
+                    "description": "Selector for extracting data from source",
+                    "properties": {
+                        "range": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "minItems": 2,
+                            "maxItems": 2
+                        },
+                        "filter": {
+                            "type": "string"
+                        },
+                        "path": {
+                            "type": "string"
+                        }
+                    },
+                    "additionalProperties": true
+                }
+            },
+            "required": [
+                "type"
+            ],
+            "additionalProperties": false
+        },
+        "transform": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "list-extract",
+                        "summarize",
+                        "concatenate",
+                        "map",
+                        "filter"
+                    ],
+                    "description": "Type of transformation to apply"
+                },
+                "instructions": {
+                    "type": "string",
+                    "description": "Human-readable instructions for transformation"
+                },
+                "params": {
+                    "type": "object",
+                    "description": "Additional transformation parameters",
+                    "additionalProperties": true
+                }
+            },
+            "required": [
+                "type"
+            ],
+            "additionalProperties": false
+        },
+        "constraints": {
+            "type": "object",
+            "properties": {
+                "minLength": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "maxLength": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "minItems": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "For repeatable segments: minimum items"
+                },
+                "maxItems": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "For repeatable segments: maximum items"
+                },
+                "pattern": {
+                    "type": "string",
+                    "description": "Regex pattern for content validation"
+                }
+            },
+            "additionalProperties": false
+        }
+    }
+}

@@ -1,0 +1,64 @@
+{
+    "id": "transcript-meeting",
+    "name": "会议纪要模板",
+    "version": "1.0.0",
+    "description": "用于处理会议记录和讨论内容",
+    "segments": [
+        {
+            "key": "meeting_info",
+            "title": "会议信息",
+            "description": "会议的基本信息：主题、时间、参会人员",
+            "required": true,
+            "format": "json"
+        },
+        {
+            "key": "agenda",
+            "title": "议程",
+            "description": "会议议程和讨论主题",
+            "repeatable": true,
+            "format": "markdown"
+        },
+        {
+            "key": "discussion_points",
+            "title": "讨论要点",
+            "description": "会议中的主要讨论内容",
+            "required": true,
+            "repeatable": true,
+            "format": "markdown",
+            "constraints": {
+                "minItems": 1
+            }
+        },
+        {
+            "key": "decisions",
+            "title": "决议事项",
+            "description": "会议中做出的决定",
+            "repeatable": true,
+            "format": "markdown"
+        },
+        {
+            "key": "action_items",
+            "title": "行动项",
+            "description": "需要执行的任务和责任人",
+            "repeatable": true,
+            "format": "markdown"
+        },
+        {
+            "key": "risks_issues",
+            "title": "风险与问题",
+            "description": "识别的风险和待解决问题",
+            "repeatable": true,
+            "format": "markdown"
+        },
+        {
+            "key": "next_steps",
+            "title": "后续计划",
+            "description": "下一步计划和时间安排",
+            "format": "markdown"
+        }
+    ],
+    "metadata": {
+        "category": "business",
+        "language": "zh-CN"
+    }
+}

@@ -1,0 +1,65 @@
+{
+    "id": "transcript-segmented",
+    "name": "分段转录模板",
+    "version": "1.0.0",
+    "description": "用于处理分段式转录内容，适用于教学视频、讲座等结构化内容",
+    "segments": [
+        {
+            "key": "context",
+            "title": "背景信息",
+            "description": "内容的背景介绍和上下文",
+            "required": true,
+            "inputs": [
+                {
+                    "type": "transcript",
+                    "selector": {
+                        "range": [
+                            0,
+                            1
+                        ]
+                    }
+                }
+            ],
+            "format": "markdown"
+        },
+        {
+            "key": "key_points",
+            "title": "核心要点",
+            "description": "内容中的关键知识点和概念",
+            "required": true,
+            "repeatable": true,
+            "transform": {
+                "type": "list-extract",
+                "instructions": "提取核心要点"
+            },
+            "format": "markdown",
+            "constraints": {
+                "minItems": 1
+            }
+        },
+        {
+            "key": "examples",
+            "title": "示例说明",
+            "description": "相关的示例或案例",
+            "repeatable": true,
+            "format": "markdown"
+        },
+        {
+            "key": "summary",
+            "title": "总结",
+            "description": "内容的总结归纳",
+            "format": "markdown"
+        },
+        {
+            "key": "references",
+            "title": "参考资料",
+            "description": "相关的参考资料和链接",
+            "repeatable": true,
+            "format": "markdown"
+        }
+    ],
+    "metadata": {
+        "category": "education",
+        "language": "zh-CN"
+    }
+}

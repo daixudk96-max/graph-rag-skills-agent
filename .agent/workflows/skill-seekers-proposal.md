@@ -19,6 +19,35 @@ description: skill-seekers-proposal workflow
 - **模板类型**：technical-guide / workflow-skill / course-tutorial / brand-enterprise / tool-utility
 - **技能名称与描述**：技能的标题和简短说明
 
+### 1.5 选择动态模板（可选）
+
+> **适用条件**：当来源类型为 `transcript` 时推荐使用
+
+**可用模板**：
+- `transcript-segmented@1.0.0` - 分段转录模板（教学视频、讲座）
+- `transcript-interview@1.0.0` - 面试记录模板（问答对话）
+- `transcript-meeting@1.0.0` - 会议纪要模板（会议记录）
+
+**执行步骤**：
+1. 询问用户选择模板或使用默认 `transcript-segmented`
+2. 如果存在旧版本技能，检查模板版本变更
+3. 如有模板升级，使用 `TemplateMigrator` 生成迁移建议
+
+```python
+from graphrag_agent.integrations.skill_seekers import TemplateRegistry, TemplateMigrator
+
+registry = TemplateRegistry()
+template = registry.get_template("transcript-segmented", "1.0.0")
+
+# 如果存在旧版本，生成迁移指南
+if old_template:
+    migrator = TemplateMigrator()
+    report = migrator.compare(old_template, template)
+    if report.has_changes:
+        guide = migrator.generate_migration_guide(report)
+        print(guide)
+```
+
 ### 2. 执行抓取（需用户同意后再运行）
 ```bash
 skill-seekers scrape --spec-first --output-raw \
@@ -42,7 +71,7 @@ skill-seekers scrape --spec-first --output-raw \
 
 > **适用条件**：当来源类型为 `transcript` 时执行
 
-**目的**：对转录文本进行语义分段和结构化总结
+**目的**：使用动态模板对转录文本进行语义分段和结构化总结
 
 **执行步骤**：
 
@@ -50,60 +79,71 @@ skill-seekers scrape --spec-first --output-raw \
    - 阅读 `scraped_data.json` 中的原始内容
    - 记录文件名和时间戳信息
 
-2. **语义分段**
-   - 根据标志词分段：'好'、'下一个'、'第一个'、'首先'、'其次'、'最后'
-   - **注意**：不按篇幅分段，只在明确标志处分段
+2. **使用模板填充内容**
+```python
+from graphrag_agent.integrations.skill_seekers import TemplateFiller, TemplateRegistry
 
-3. **子分段识别**
-   - 在主分段内识别话题转换
-   - 创建层次结构 (id: "1.1", "1.2")
+registry = TemplateRegistry()
+template = registry.get_template("transcript-segmented", "1.0.0")
+filler = TemplateFiller()
+
+# 填充模板
+raw_content = {
+    "context": "背景信息...",
+    "key_points": ["要点1", "要点2", "要点3"],
+    "summary": "总结内容..."
+}
+filled = filler.fill(template, raw_content)
+
+# 验证填充结果
+errors = filler.validate(filled, template)
+```
+
+3. **语义分段**
+   - 根据模板定义的 segments 进行内容分段
+   - 应用 transform 规则提取列表项
 
 4. **撰写全面总结**
    - `summary_full`：详尽准确，让未读原文者能完全理解
    - `summary_brief`：2-3 句核心内容
    - `key_points`：列表形式的重点
-   - `examples_simplified`：保留并简化例子
-   - `reason`：解释分段原因
 
-5. **同音字修正**
-   - 根据上下文推断正确用词
-   - 记录在 `homophone_notes`
-
-6. **输出 segmented_summary.json**
+5. **输出 skill_input.json**（新格式）
 ```json
 {
-  "version": "1.0",
-  "source_file": "原文件名.txt",
-  "total_segments": 3,
-  "segments": [
-    {
-      "id": "1",
-      "timestamp": "00:00 - 08:05",
-      "marker": "好",
-      "reason": "分段原因",
-      "summary_full": "详细总结...",
-      "summary_brief": "简短摘要",
-      "key_points": ["要点1"],
-      "examples_simplified": ["例子"],
-      "homophone_notes": ["修正说明"],
-      "subsegments": [{"id": "1.1", "topic": "子话题", "summary": "子总结"}]
+  "template": {
+    "id": "transcript-segmented",
+    "version": "1.0.0",
+    "segments": [...]
+  },
+  "content": {
+    "status": "complete",
+    "segments": {
+      "context": {"value": "..."},
+      "key_points": [{"value": "要点1"}, {"value": "要点2"}]
     }
-  ],
-  "metadata": {"generated_by": "AI_assistant", "generated_at": "ISO时间"}
+  },
+  "source": {
+    "transcript_refs": [{"file": "lecture.md", "segments": [0, 10]}]
+  },
+  "trace": {
+    "generated_at": "2024-12-18T00:00:00Z",
+    "template_version_used": "1.0.0"
+  }
 }
 ```
 
 ### 3.6 综合生成 Spec（使用分段总结 + 原文）
 
-> **适用条件**：已完成 Step 3.5，存在 `segmented_summary.json`
+> **适用条件**：已完成 Step 3.5，存在 `skill_input.json`
 
 **输入**：
 - `scraped_data.json`（原始数据，用于验证准确性）
-- `segmented_summary.json`（分段总结）
+- `skill_input.json`（模板化内容）
 
 **处理**：
 - 对照原文验证总结准确性
-- 将分段结构融入 `spec.yaml` 的 lessons
+- 将模板 segments 结构融入 `spec.yaml` 的 lessons
 - 使用分段总结增强 sections 内容
 
 ### 4. 生成/修订 spec.yaml
@@ -115,7 +155,7 @@ skill-seekers scrape --spec-first --output-raw \
 
 ### 5. 交付物
 - `scraped_data.json`（原始数据）
-- `segmented_summary.json`（分段总结，仅 transcript 类型）
+- `skill_input.json`（模板化内容，仅 transcript 类型）
 - `spec.yaml`（草稿规格）
 - 未决问题清单
 
@@ -125,3 +165,4 @@ skill-seekers scrape --spec-first --output-raw \
 - 生成的文件路径与下一步建议
 
 <!-- SKILL_SEEKERS:END -->
+

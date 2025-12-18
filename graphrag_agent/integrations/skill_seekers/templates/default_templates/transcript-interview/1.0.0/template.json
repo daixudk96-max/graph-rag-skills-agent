@@ -1,0 +1,63 @@
+{
+    "id": "transcript-interview",
+    "name": "面试记录模板",
+    "version": "1.0.0",
+    "description": "用于处理面试记录和问答对话内容",
+    "segments": [
+        {
+            "key": "interview_info",
+            "title": "面试信息",
+            "description": "面试的基本信息：职位、日期、面试官等",
+            "required": true,
+            "format": "json"
+        },
+        {
+            "key": "candidate_background",
+            "title": "候选人背景",
+            "description": "候选人的教育和工作背景概述",
+            "format": "markdown"
+        },
+        {
+            "key": "questions_answers",
+            "title": "问答记录",
+            "description": "面试问题和回答的详细记录",
+            "required": true,
+            "repeatable": true,
+            "format": "markdown",
+            "constraints": {
+                "minItems": 1
+            }
+        },
+        {
+            "key": "technical_assessment",
+            "title": "技术评估",
+            "description": "技术能力评估和观察",
+            "repeatable": true,
+            "format": "markdown"
+        },
+        {
+            "key": "behavioral_assessment",
+            "title": "行为评估",
+            "description": "软技能和行为特质评估",
+            "repeatable": true,
+            "format": "markdown"
+        },
+        {
+            "key": "overall_evaluation",
+            "title": "综合评价",
+            "description": "面试的整体评价和建议",
+            "format": "markdown"
+        },
+        {
+            "key": "follow_up",
+            "title": "后续行动",
+            "description": "需要跟进的事项",
+            "repeatable": true,
+            "format": "markdown"
+        }
+    ],
+    "metadata": {
+        "category": "hr",
+        "language": "zh-CN"
+    }
+}
