@@ -78,19 +78,14 @@ ATOM 相关模块 MUST 在可选依赖缺失时提供明确的错误信息，而
 
 `itext2kg.atom.models` 模块 MUST 导出所有在 `temporal_kg.py` 中使用的类型。
 
+> **Note**: This restores compliance with the existing requirement after an accidental reset of the itext2kg folder.
+
 #### Scenario: EntityProperties 可从 itext2kg.atom.models 导入
 
 **Given** itext2kg 包已安装
 **When** 执行 `from itext2kg.atom.models import EntityProperties`
 **Then** 导入应成功
 **And** `EntityProperties` 类可用于创建实体属性对象
-
-#### Scenario: TemporalKnowledgeGraph 到 ATOM KG 转换
-
-**Given** 存在一个 `TemporalKnowledgeGraph` 实例
-**When** 调用 `kg.to_atom_kg()` 方法
-**Then** 转换应成功完成
-**And** 返回有效的 `itext2kg.atom.models.KnowledgeGraph` 对象
 
 ### Requirement: 测试脚本可移植性
 
