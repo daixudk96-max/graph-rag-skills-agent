@@ -1,0 +1,35 @@
+C:\Python311\Lib\site-packages\torch\cuda\__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+============================================================
+GraphRAG -> Proposal -> Apply Workflow Test
+============================================================
+
+[Step 1] GraphRAG Export
+  - Generated test_workflow_input.json
+  - Input contains 1 pages and 1 entities
+
+[Step 2] Proposal (Simulated)
+  - Generated test_spec.yaml
+
+[Step 3] Apply (Simulated)
+  - Reading spec...
+  - Processing sources...
+  - Generated test_SKILL.md
+  - Result preview:
+----------------------------------------
+# Python Knowledge Base
+
+Key concepts from knowledge graph
+
+## Sources
+- Knowledge Graph: test-kg (Exported: 2025-12-18T15:21:19.584403Z)
+
+## Python Basics
+Derived from community summary...
+
+### References
+- [Community: Python Basics](graphrag://community/c1)
+
+----------------------------------------
+
+[SUCCESS] Full workflow simulation passed!

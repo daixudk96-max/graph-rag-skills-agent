@@ -160,6 +160,16 @@ DSA_DELTA_COUNT_THRESHOLD = _get_env_int("DSA_DELTA_COUNT_THRESHOLD", 5) or 5  #
 DSA_DELTA_TOKEN_THRESHOLD = _get_env_int("DSA_DELTA_TOKEN_THRESHOLD", 1000) or 1000  # 触发压缩的 token 阈值
 DSA_COMPACTION_ENABLED = _get_env_bool("DSA_COMPACTION_ENABLED", True)  # 是否启用后台压缩
 
+# ===== Skill Seekers Export 配置 =====
+# 用于将 GraphRAG 知识图谱导出为 Skill Seekers 兼容格式
+
+SKILL_EXPORT_DEFAULT_LEVEL = _get_env_int("SKILL_EXPORT_DEFAULT_LEVEL", 0) or 0  # 默认导出社区层级
+SKILL_EXPORT_INCLUDE_CHUNKS = _get_env_bool("SKILL_EXPORT_INCLUDE_CHUNKS", False)  # 是否包含原始文档块
+SKILL_EXPORT_DEDUP_THRESHOLD = _get_env_float("SKILL_EXPORT_DEDUP_THRESHOLD", 0.85) or 0.85  # 去重阈值
+SKILL_EXPORT_MAX_COMMUNITIES = _get_env_int("SKILL_EXPORT_MAX_COMMUNITIES", None)  # 最大导出社区数
+SKILL_EXPORT_OUTPUT_PATH = os.getenv("SKILL_EXPORT_OUTPUT_PATH", "skill_input.json")  # 默认输出路径
+SKILL_EXPORT_SYNC_STATE_PATH = os.getenv("SKILL_EXPORT_SYNC_STATE_PATH", ".skill_sync_state.json")  # 同步状态文件
+
 # ===== 实体消歧与对齐配置 =====
 
 DISAMBIG_STRING_THRESHOLD = _get_env_float("DISAMBIG_STRING_THRESHOLD", 0.7) or 0.7
